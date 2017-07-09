@@ -1,0 +1,164 @@
+/**    
+ * 文件名：judp.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年6月11日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package NetProtocol;
+
+
+
+import java.util.LinkedList;
+
+import FactoryPackaget.AckQueue;
+import FactoryPackaget.ClientAck;
+import FactoryPackaget.NetDataPackaget;
+import FactoryPackaget.SubNetPackaget;
+
+import JNetSocket.UDPClient;
+import NetModel.DataModel;
+import NetModel.NetDataAddress;
+import NetPackaget.PackagetRandom;
+import NetPackaget.SubPackaget;
+import RecviceData.AckPackaget;
+import RecviceData.ClientSession;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：judp    
+ * 类描述：   upp客户端
+ * 被封装发送 
+ * 创建人：jinyu    
+ * 创建时间：2017年6月11日 下午7:12:40    
+ * 修改人：jinyu    
+ * 修改时间：2017年6月11日 下午7:12:40    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class judpClient {
+  //  UDPClient client=new UDPClient();
+    boolean isColse=false;
+  //  ListenerServer recCall=new ListenerServer();
+    ClientSession  client=null;
+    
+    /**
+     * 发送数据
+     * 
+     */
+    public void sendData(String sIP,int sPort,byte[]data)
+    {
+       LinkedList<byte[]> list=SubPackaget.subData(data);
+      if(list!=null)
+    {
+        long sessionid=PackagetRandom.getSessionID();
+        long initseq=PackagetRandom.getSequeueID();
+        int num=list.size();
+        while(list.size()>0)
+        {
+             long packagetID=PackagetRandom.getInstanceID(this);
+             byte[] sendData=SubNetPackaget.createNetPackaget(sessionid,initseq,packagetID,num,list.removeFirst());
+             //
+           byte[]  netData=   SubNetPackaget.createNetData(sendData);
+             
+            client.sendData(sIP, sPort, netData);
+            putCache(sessionid,packagetID,sendData,sIP,sPort);
+        }
+        putsendAck(sessionid,num);
+    }
+    }
+    /*
+     * 发送数据
+     * 绑定本地地址
+     */
+    public void sendData(String  localIP,int  localPort, String sIP,int sPort,byte[]data)
+    {
+        LinkedList<byte[]> list=SubPackaget.subData(data);
+        if(list!=null)
+        {
+           long sessionid=PackagetRandom.getSessionID();
+           long initseq=PackagetRandom.getSequeueID();
+            int num=list.size();
+            while(list.size()>0)
+            {
+                 long packagetID=PackagetRandom.getInstanceID(this);
+                 byte[] sendData=SubNetPackaget.createNetPackaget(sessionid,initseq,packagetID,num,list.removeFirst());
+                 client.bindLocal(localIP,localPort);
+                 byte[]  netData=   SubNetPackaget.createNetData(sendData);
+                 client.sendData(sIP, sPort, netData);
+                 putCache(sessionid,packagetID,sendData,sIP,sPort);
+            }
+            putsendAck(sessionid,num);
+        }
+      
+    }
+    
+    /**
+     * 
+     * 保存每一个包
+    
+     */
+    private void putCache(long sessionid,long packagetid ,byte[]data,String host,int port)
+    {
+        String key=String.valueOf(sessionid)+String.valueOf(packagetid);
+        CacheOrg.put(key, client, data, host, port);
+        ClientAck.put(this, client);
+    }
+    private void putsendAck(long sessionid,int num)
+    {
+        AckPackaget  p=new AckPackaget();
+        p.packagetNum=num;
+        p.sessionid=sessionid;
+        AckQueue.put(p, client);
+        
+    }
+    /**
+     * 逻辑上关闭
+     */
+    public void close()
+    {
+        isColse=true;
+        client.protocolClose();
+    }
+    /**
+     * 返回逻辑关闭
+     */
+    public boolean isClose()
+    {
+        return isColse;
+    }
+    
+    /*
+     * 接收数据
+     */
+    public byte[]  getCallBackData()
+    {
+          NetDataPackaget   data=  recCall.getNetData(-1);
+           if(data!=null)
+           {
+               return data.netPackaget;
+           }
+           else
+           {
+               return null;
+           }
+    }
+  @SuppressWarnings("unused")
+    private void add(NetDataAddress calldata)
+             {
+             //通过该类发送的数据都经过打包
+             //返回的数据必须重新解包
+             //由于启用了ack接收，所以直接传回即可
+             DataModel monitorData=new DataModel();
+             monitorData.data=calldata.netData;
+             monitorData.localIP="host";
+             monitorData.localPort=-1;
+             monitorData.srcIP=calldata.srcIP;
+             monitorData.srcPort=calldata.srcPort;
+            recCall.monitorServer(monitorData);
+    }
+}

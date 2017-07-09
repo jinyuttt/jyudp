@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="RecviceData.ClientSession"/>
+<fullyQualifiedTypeName name="JNetSocket.UDPClient"/>
+<fullyQualifiedTypeName name="com.google.common.eventbus.Subscribe"/>
+<fullyQualifiedTypeName name="RecviceData.ServerSession"/>
+<fullyQualifiedTypeName name="NetPackaget.SubPackaget"/>
+<fullyQualifiedTypeName name="NetPackaget.PackagetRandom"/>
+<fullyQualifiedTypeName name="FactoryPackaget.SubNetPackaget"/>
+<fullyQualifiedTypeName name="NetProtocol.ListenerServer"/>
+<fullyQualifiedTypeName name="NetModel.DataModel"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ExecutorService"/>
+<fullyQualifiedTypeName name="java.util.concurrent.Executors"/>
+<fullyQualifiedTypeName name="NetPackaget.NetDataPackaget"/>
+<fullyQualifiedTypeName name="NetPackaget.CreateNetPackaget"/>
+<fullyQualifiedTypeName name="java.util.WeakHashMap"/>
+<fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
+<fullyQualifiedTypeName name="java.lang.ref.ReferenceQueue"/>
+<fullyQualifiedTypeName name="DataBus.CacheData"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="ListenClient.ClientManager"/>
+<fullyQualifiedTypeName name="DataBus.CacheListener"/>
+<fullyQualifiedTypeName name="NetProtocol.judpSocket"/>
+<fullyQualifiedTypeName name="java.util.concurrent.SynchronousQueue"/>
+<fullyQualifiedTypeName name="Sessions.Session"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TransferQueue"/>
+<fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
+<fullyQualifiedTypeName name="Sessions.SessionFactory"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ConcurrentHashMap"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="Sessions.ServerManager"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ConcurrentLinkedQueue"/>
+<fullyQualifiedTypeName name="NetProtocol.judpClient"/>
+<fullyQualifiedTypeName name="NetProtocol.judpServer"/>
+<fullyQualifiedTypeName name="EventBus.MessageBus"/>
+<fullyQualifiedTypeName name="NetModel.NetDataAddress"/>
+<fullyQualifiedTypeName name="BufferData.AckPackaget"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicLong"/>
+</qualifiedTypeNameHistroy>

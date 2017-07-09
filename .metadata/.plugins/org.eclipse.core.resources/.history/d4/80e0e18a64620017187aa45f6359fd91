@@ -1,0 +1,35 @@
+/**    
+ * 文件名：Session.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年7月6日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package RecviceData;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：Session    
+ * 类描述：    会话基类
+ * 创建人：jinyu    
+ * 创建时间：2017年7月6日 下午11:56:25    
+ * 修改人：jinyu    
+ * 修改时间：2017年7月6日 下午11:56:25    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class Session {
+private long seesionid;
+public long getID()
+{
+    return seesionid;
+}
+public void setID(long id)
+{
+    seesionid=id;
+}
+}

@@ -1,0 +1,101 @@
+/**    
+ * 文件名：ServerManager.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年7月8日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package Sessions;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import NetProtocol.judpServer;
+
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：ServerManager    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年7月8日 下午5:37:06    
+ * 修改人：jinyu    
+ * 修改时间：2017年7月8日 下午5:37:06    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ServerManager {
+    /*
+     * 每个端口对应的每次通讯
+     */
+    private static ConcurrentHashMap<Integer,judpServer> map=new ConcurrentHashMap<Integer,judpServer>();
+    /*
+     * 有删除session的key
+     */
+    private static ArrayList<String> handQueue=new  ArrayList<String>();
+    
+    private static ConcurrentHashMap<String,ConcurrentLinkedQueue<Long>> mapSession=new ConcurrentHashMap<Integer,ConcurrentLinkedQueue<Long>>();
+public static void addSocket(int port,judpServer socket)
+{
+    map.put(port, socket);
+}
+public static judpServer getSocket(int port)
+{
+   return  map.get(port);
+}
+public static void remove(int port)
+{
+    map.remove(port);
+}
+public static void addSession(String key)
+{
+    handQueue.add(key);
+}
+public static  String[] getSession()
+{
+    if(handQueue.isEmpty())
+    {
+        return null;
+    }
+    else
+    {
+        int size=handQueue.size();
+        String[] keys=new String[size];
+        for(int i=0;i<size;i++)
+        {
+            keys[i]=handQueue.get(i);
+        }
+        removeKeys(keys);
+        return keys;
+        
+    }
+}
+private static void removeKeys(String[] keys)
+{
+    Thread remove=new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+         
+            for(int i=0;i<keys.length;i++)
+            {
+                handQueue.remove(keys[i]);
+            }
+            
+        }
+        
+    });
+    remove.setDaemon(true);
+    remove.setName("removeSession");
+    remove.start();
+}
+public static void removeKey(String key)
+{
+    handQueue.remove(key);
+}
+}

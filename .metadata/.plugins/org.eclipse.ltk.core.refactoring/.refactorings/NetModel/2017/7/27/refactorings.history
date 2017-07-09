@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move package &apos;EventBus&apos; to &apos;NetSocket/src&apos;&#x0D;&#x0A;- Original project: &apos;NetModel&apos;&#x0D;&#x0A;- Destination element: &apos;NetSocket/src&apos;&#x0D;&#x0A;- Original element: &apos;NetModel/src/EventBus&apos;&#x0D;&#x0A;- Update references to refactored element" description="Move package" destination="=NetSocket/src" element1="/src&lt;EventBus" flags="589830" fragments="1" id="org.eclipse.jdt.ui.move" policy="org.eclipse.jdt.ui.movePackages" stamp="1499448488523" version="1.0"/>
+</session>

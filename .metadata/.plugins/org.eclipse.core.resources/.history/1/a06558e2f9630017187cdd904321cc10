@@ -1,0 +1,50 @@
+/**    
+ * 文件名：ServerManager.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年7月8日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package Sessions;
+
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
+
+import NetProtocol.judpServer;
+
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：ServerManager    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年7月8日 下午5:37:06    
+ * 修改人：jinyu    
+ * 修改时间：2017年7月8日 下午5:37:06    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ServerManager {
+    private static ConcurrentHashMap<Integer,judpServer> map=new ConcurrentHashMap<Integer,judpServer>();
+    private static ArrayList<String> handQueue=new  ArrayList<String>();
+public static void addSocket(int port,judpServer socket)
+{
+    map.put(port, socket);
+}
+public static judpServer getSocket(int port)
+{
+   return  map.get(port);
+}
+public void remove(int port)
+{
+    map.remove(port);
+}
+public void addSession(String key)
+{
+    handQueue.add(key);
+}
+}

@@ -1,0 +1,131 @@
+/**    
+ * 文件名：ClientManager.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年7月8日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package ListenClient;
+
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import DataBus.CacheData;
+import NetProtocol.judpClient;
+import Sessions.Session;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：ClientManager    
+ * 类描述：    管理发送端
+ * 管理发送端消失关闭
+ * 创建人：jinyu    
+ * 创建时间：2017年7月8日 下午1:14:55    
+ * 修改人：jinyu    
+ * 修改时间：2017年7月8日 下午1:14:55    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class ClientManager {
+    
+    private static WeakHashMap<judpClient,String> map=new WeakHashMap<judpClient,String>();
+    private static HashMap<WeakReference<judpClient>,String> objmap=new HashMap<WeakReference<judpClient>,String>();
+    private static ReferenceQueue<judpClient> gcQueue=new ReferenceQueue<judpClient>();
+    private static ConcurrentHashMap<Long,Session> hashMap=new ConcurrentHashMap<Long,Session>();
+    private static CacheData<Long,judpClient> cache=new CacheData<Long,judpClient>(20000, 6000, false);
+    private static  volatile boolean isStart=false;
+    private static ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    public Session getSession(long id)
+    {
+      return  hashMap.get(id);
+    }
+    /*
+     * 添加发送端session
+     */
+   public static boolean addSession(long id,Session session)
+   {
+       
+       if(hashMap.containsKey(id))
+       {
+           return false;
+       }
+       else
+       {
+           hashMap.put(id, session);
+           return true;
+       }
+   }
+
+  /**
+   * 添加发送端
+   */
+ public  static  void addClient(judpClient client)
+{
+    WeakReference<judpClient> tmp=new  WeakReference<judpClient>(client,gcQueue);
+    map.put(client, "");
+    objmap.put(tmp, "");
+    cache.put(client.getSessionID(), client);
+    //
+    check();
+    
+    
+}
+private static void check()
+{
+    if(isStart)
+    {
+        return;
+    }
+    isStart=true;
+    cachedThreadPool.execute(new Runnable() {
+
+        @Override
+        public void run() {
+            while(true)
+            {
+              
+                WeakReference<judpClient> tmp= (WeakReference<judpClient>) gcQueue.poll();
+                if(tmp==null)
+                {
+                    //说明没有数据
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                       
+                    }
+                    continue;
+                }
+                tmp.get().close();
+                long id=tmp.get().getSessionID();
+                if(tmp.get().isOutTime())
+                {
+                    //如果消失时已经超时，则要真正关闭；
+                    //只要缓存没有到就不可能消失
+                    //理论上不用判断
+                   
+                    Session session= hashMap.get(id);
+                    session.close();
+                    hashMap.remove(id);
+                    
+                }
+                judpClient client= cache.getByKey(id);
+                if(client!=null)
+                 client.close();
+            }
+            
+        }
+        
+    });
+   
+}
+}

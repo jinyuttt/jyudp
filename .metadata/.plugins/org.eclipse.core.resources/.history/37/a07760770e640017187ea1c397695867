@@ -1,0 +1,38 @@
+package Client;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+
+import NetProtocol.judpClient;
+
+public class TestClient {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+while(true)
+{
+   int ch=0;
+   System.out.println("«Î ‰»Î£∫");
+   byte[] data=new byte[8];
+   ByteBuffer buf=ByteBuffer.wrap(data);
+   int num=0;
+try {
+    while(ch!=-1)
+    {
+      ch = System.in.read();
+      buf.put((byte) ch);
+    }
+   buf.flip();
+   int r=buf.getInt();
+    judpClient client=new judpClient();
+    byte[]senddata=String.valueOf(r).getBytes();
+    client.sendData("192.168.3.139", 5555, senddata);
+} catch (IOException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+}
+   
+}
+    }
+
+}

@@ -1,0 +1,13 @@
+/**
+ * 
+ */
+package RecviceData;
+
+/**
+ * @author jinyu
+ *  »á»°
+ */
+public abstract class Session {
+public long  sessionid;
+
+}
