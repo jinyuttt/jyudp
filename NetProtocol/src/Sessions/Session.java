@@ -42,6 +42,8 @@ public abstract class Session {
     {
         
     }
+    
+private long clientid;
 private long seesionid;
 /*
  * 来源Ip
@@ -61,6 +63,11 @@ private String localIP;
 * 本地IP
 */
 private int localPort;
+
+/*
+ * 本地绑定端口
+ */
+private int localBindPort=0;
 /*
 * 通讯协议类型 0 tcp  1 udp  2 组播 3 广播
 */
@@ -75,6 +82,8 @@ private volatile boolean isClose=false;
  * 逻辑关闭
  */
 private volatile boolean logicalClose=false;
+
+
 public void setClose()
 {
     isClose=true;
@@ -131,6 +140,7 @@ public void setNetType(int type)
 {
     netType=type;
 }
+
 /**
  * 设置逻辑关闭
  */
@@ -145,12 +155,37 @@ public boolean isLogicalClose()
 {
     return logicalClose;
 }
+
+/*
+ * 设置绑定端口
+ */
+public void setLocalBindPort(int port)
+{
+    localBindPort=port;
+}
+/*
+ * 获取绑定端口
+ */
+public int getLocalBindPort()
+{
+    return localBindPort;
+}
+//serversession准备
+public void setClientID(long id)
+{
+    clientid=id;
+}
+public long getClientID()
+{
+    return clientid;
+}
 public abstract void close();
 public abstract void setCall();
-public abstract void sendData(String sIP,int sPort,byte[]data);
-public  abstract void sendData(String  localIP,int  localPort, String sIP,int sPort,byte[]data);
+public abstract void sendData(long id,String sIP,int sPort,byte[]data);
+public  abstract void sendData(long id,String  localIP,int  localPort, String sIP,int sPort,byte[]data);
 public abstract void addData(ReturnCode returnCode);
 public abstract NetDataAddress read();
 public abstract NetDataAddress read(int len);
+public abstract int getClientNum();
 
 }

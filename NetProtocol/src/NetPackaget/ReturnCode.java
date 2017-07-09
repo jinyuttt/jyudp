@@ -64,5 +64,10 @@ public class ReturnCode {
      * ack°ü
      */
     public AckPackaget ackPackaget=null;
+    
+    /**
+     * ¿Í»§¶ËID
+     */
+    public long clientid=0;
 
 }

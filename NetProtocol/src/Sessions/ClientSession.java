@@ -9,10 +9,14 @@
  */
 package Sessions;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import BufferData.AckPackaget;
+import BufferData.MemoryChunk;
+import BufferData.MemoryPool;
 import JNetSocket.UDPClient;
 import NetModel.DataModel;
 import NetModel.NetDataAddress;
@@ -42,13 +46,29 @@ public class ClientSession extends Session {
     /**
      * 保存数据包
      */
-  private  ConcurrentHashMap<Long,byte[]> mapCache=new ConcurrentHashMap<Long,byte[]>();
+//  private  ConcurrentHashMap<Long,byte[]> mapCache=new ConcurrentHashMap<Long,byte[]>();
+  
+  private  ConcurrentHashMap<Long,MemoryChunk> mapMemoryCache=new ConcurrentHashMap<Long,MemoryChunk>();
     /**
      * 保存每次的数据量；
      */
   private  ConcurrentHashMap<Long,Integer> mapInitSeq=new ConcurrentHashMap<Long,Integer>();
-   
+ 
+  /**
+   * 判断客户端使用情况
+   * 被客户端使用一次则增加一次
+   * 由于判断客户端回收
+   */
+  private AtomicInteger clientNum=new AtomicInteger(0);
+  
+  /*
+   * 远端IP
+   */
   private String srcIP;
+  
+  /*
+   * 远端端口
+   */
   private int port;
   public ClientSession()
     {
@@ -97,8 +117,25 @@ public class ClientSession extends Session {
             
         });
     }
+   
+    /*
+     * 设置使用
+     */
+    public void setClientIncrement()
+    {
+        clientNum.incrementAndGet();
+    }
+    
+    /*
+     * 设置不使用
+     */
+    public void setClientDecrement()
+    {
+        clientNum.decrementAndGet();
+    }
+    
     @Override
-    public void sendData(String sIP, int sPort, byte[] data) {
+    public void sendData(long id,String sIP, int sPort, byte[] data) {
         //
         LinkedList<byte[]> subPackaget=SubPackaget.subData(data);
         long initseq=PackagetRandom.getInstanceID(this);
@@ -110,19 +147,31 @@ public class ClientSession extends Session {
         while(index>0)
        {
           long packageid=PackagetRandom.getInstanceID(this);
-         
-          byte[]sendData=CreateNetPackaget.createNetPackaget(this.getID(), initseq,packageid , size, subPackaget.removeFirst());
+          byte[]sendData=CreateNetPackaget.createNetPackaget(id,this.getID(), initseq,packageid , size, subPackaget.removeFirst());
           client.sendData(sIP, sPort, sendData);
-          mapCache.put(packageid, sendData);
+          //mapCache.put(packageid, sendData);
+          MemoryChunk chunk= MemoryPool.getBlock(sendData.length);
+          chunk.setData(this.getID(),packageid,sendData);
+          mapMemoryCache.put(packageid, chunk);
           index--;
        }
         startThread();//启动监听
+        //
+        ArrayList<Long> removeID= MemoryPool.getPackaget(this.getID());
+        if(removeID!=null)
+        {
+            for(int i=0;i<removeID.size();i++)
+            {
+                mapMemoryCache.remove(removeID.get(i));
+            }
+        }
+        System.gc();
     }
 
     @Override
-    public void sendData(String localIP, int localPort, String sIP, int sPort, byte[] data) {
+    public void sendData(long id,String localIP, int localPort, String sIP, int sPort, byte[] data) {
         client.bindLocal(localIP, localPort);
-        this.sendData(sIP, sPort, data);
+        this.sendData(id,sIP, sPort, data);
         
     }
 
@@ -135,7 +184,7 @@ public class ClientSession extends Session {
             if(returnCode.ackPackaget.ackType==1)
             {
                 //完成,清除数据
-                Integer pSize= mapInitSeq.get(returnCode.InitSeq);
+                Integer pSize= mapInitSeq.get(returnCode.ackPackaget.packagetID);
                 if(pSize==null)
                 {
                     //已经接受到数据
@@ -144,9 +193,10 @@ public class ClientSession extends Session {
               int size= pSize ;
               for(int i=0;i<=size;i++)
               {
-                  mapCache.remove(returnCode.InitSeq+i);
+                  mapMemoryCache.remove(returnCode.ackPackaget.packagetID+i);
+                  //mapCache.remove(returnCode.ackPackaget.packagetID+i);
               }
-              mapInitSeq.remove(returnCode.InitSeq);
+              mapInitSeq.remove(returnCode.ackPackaget.packagetID);
               if(this.isLogicalClose()&&mapInitSeq.isEmpty())
               {
                  //已经逻辑关闭，并且没有缓存数据，则真正关闭
@@ -159,8 +209,13 @@ public class ClientSession extends Session {
             }
             else if(returnCode.ackPackaget.ackType==2)
             {
-                byte[] data=mapCache.get(returnCode.ackPackaget.packagetID);
-                this.sendData(this.srcIP, this.port, data);
+                MemoryChunk chunk=  mapMemoryCache.get(returnCode.ackPackaget.packagetID);
+                if(chunk!=null)
+                {
+                    this.sendData(returnCode.ackPackaget.clientID,this.srcIP, this.port, chunk.getData());
+                }
+               // byte[] data=mapCache.get(returnCode.ackPackaget.packagetID);
+                //this.sendData(returnCode.ackPackaget.clientID,this.srcIP, this.port, data);
             }
         }
         
@@ -188,11 +243,13 @@ public class ClientSession extends Session {
     }
     @Override
     public void setCall() {
-      
+      //发送端无法
+      //接收端组织数据供发送端使用时做重置
         
     }
     @Override
     public void close() {
+        //先发送关闭
         AckPackaget ack=new AckPackaget();
         ack.ackType=3;
         ack.sessionid=this.getID();
@@ -200,6 +257,10 @@ public class ClientSession extends Session {
         client.sendData(srcIP, port, data);
         client.close();
         
+    }
+    @Override
+    public int getClientNum() {
+       return clientNum.get();
     }
  
 

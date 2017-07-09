@@ -1,0 +1,38 @@
+package Client;
+
+
+import java.util.concurrent.TimeUnit;
+
+import NetProtocol.judpClient;
+
+public class TestClient {
+
+    public static void main(String[] args) {
+       long id=-1;
+while(true)
+{
+
+  //  int num=100;
+   // while(num>0)
+   // {
+     StringBuffer  str=new StringBuffer();
+     str.append("sjfhslghsdjsdfgsgsdg");
+     str.append(id);
+
+    judpClient client=new judpClient();
+    byte[]senddata=str.toString().trim().getBytes();
+    client.sendData("192.168.3.139", 5555, senddata);
+    System.out.println("sessionid:"+client.getSessionID());
+    id++;
+   // }
+
+  try {
+    TimeUnit.SECONDS.sleep(20);
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+   
+}
+    }
+
+}

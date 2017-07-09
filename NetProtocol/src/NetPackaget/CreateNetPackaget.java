@@ -32,16 +32,17 @@ public class CreateNetPackaget {
     /*
      * 创建网络发送包
      */
-public static byte[] createNetPackaget(long sessionid,long initseq,long packagetid, int packagetNum,byte[] data)
+public static byte[] createNetPackaget(long id,long sessionid,long initseq,long packagetid, int packagetNum,byte[] data)
 {
     if(data==null)
     {
         return null;
     }
-    byte[] bytes=new byte[28+data.length+1+myFlage.length];//一个字节类型包
+    byte[] bytes=new byte[36+data.length+1+myFlage.length];//一个字节类型包
     ByteBuffer buf=ByteBuffer.wrap(bytes);
     buf.put(myFlage);
     buf.put((byte) 0);
+    buf.putLong(id);
     buf.putLong(sessionid);
     buf.putLong(initseq);
     buf.putInt(packagetNum);
@@ -57,22 +58,23 @@ public static byte[] createNetPackaget(long sessionid,long initseq,long packaget
 public static byte[] createAckPackaget(AckPackaget ack)
 {
   int len=0;
-  if(ack.ackType==2)
+  if(ack.ackType==2||ack.ackType==1)
   {
-      len=22;
+      len=30;
   }
   else
   {
-      len=14;
+      len=22;
   }
     byte[] bytes=new byte[len+myFlage.length];//一个字节网络包类型包;ack类型
     ByteBuffer buf=ByteBuffer.wrap(bytes);
     buf.put(myFlage);
     buf.put((byte) 1);
     buf.put(ack.ackType);
+    buf.putLong(ack.clientID);
     buf.putLong(ack.sessionid);
     buf.putInt(ack.packagetNum);
-    if(ack.ackType==2)
+    if(ack.ackType==2||ack.ackType==1)
     {
         buf.putLong(ack.packagetID);
     }
@@ -113,11 +115,12 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
     byte type=buf.get();
     if(type==0)
     {
+    long clientid=buf.getLong();
     long sessionid=buf.getLong();
     long initseq=buf.getLong();
     int  num=buf.getInt();
     long packagetid=buf.getLong();
-    byte[] data=new byte[netdata.length-28-1];
+    byte[] data=new byte[netdata.length-36-1];
     buf.get(data);
     code.data=data;
     code.InitSeq=initseq;
@@ -125,24 +128,28 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
     code.packagetNum=num;
     code.SessionID=sessionid;
     code.isAck=false;
+    code.clientid=clientid;
     return code;
     }
     else
     {
         //说明是ack,没有真正数据
         byte acktype=buf.get();
+        long clientid=buf.getLong();
         long sessionid=buf.getLong();
         int  num=buf.getInt();
         AckPackaget ack=new AckPackaget();
         ack.ackType=acktype;
         ack.packagetNum=num;
         ack.sessionid=sessionid;
-        if(acktype==2)
+        ack.clientID=clientid;
+        if(acktype==2||acktype==1)
         {
             ack.packagetID=buf.getLong();
         }
         code.isAck=true;
         code.ackPackaget=ack;
+        
     }
     }
     catch(Exception ex)
@@ -158,6 +165,7 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
  * 由于使用封装接口已经打包sessionid;
  * 与直接接收的数据差别；
  * 打上标记方便接收端解析数据
+ * 无用
  */
 public static byte[] createNetData(byte[]sendData)
 {

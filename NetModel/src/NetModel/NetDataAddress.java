@@ -51,4 +51,6 @@ public class NetDataAddress {
      * 读取数据长度
      */
     public int len=-1;
+    
+    public long srcid=-1;
 }

@@ -9,12 +9,12 @@
  */
 package DataBus;
 
-import java.lang.ref.WeakReference;
+
 
 import com.google.common.cache.RemovalNotification;
 
-import NetProtocol.judpClient;
 import Sessions.ClientManager;
+import Sessions.ClientSessionsPools;
 import Sessions.Session;
 
 
@@ -31,39 +31,70 @@ import Sessions.Session;
  * @version     
  *     
  */
-public class CacheListener extends CacheTimeListenter<Long,WeakReference<judpClient>> {
+public class CacheListener extends CacheTimeListenter<Long, Session> {
 
     @Override
-    public void onRemoval(RemovalNotification<Long, WeakReference<judpClient>> arg) {
+    public void onRemoval(RemovalNotification<Long,  Session> arg) {
         
-        WeakReference<judpClient> client= arg.getValue();
-        if(client==null||client.get()==null)
+        Session client= arg.getValue();
+        if(client==null)
         {
             //已经消失没有引用；
             //如果已经关闭到期；则关闭
             Session session=ClientManager.getSession(arg.getKey());
             if(session!=null)
             {
+                session.setLogicalClose();
                 session.close();
+                removeSessionByKey(session);
             }
         }
         else
         {
-            judpClient jclient=client.get();
-            jclient.setOutTime();
-            if(jclient.isClose())
+            //没有外部引用；***待定
+            client.setLogicalClose();
+            if(client.getClientNum()==0)
             {
                 //超时时已经关闭，则真正关闭
                 Session session=ClientManager.getSession(arg.getKey());
                 if(session!=null)
                 {
+                   
                     session.close();
+                    removeSessionByKey(session);
                 }
             }
         }
        
     }
-
+     
+    /*
+     * 
+     */
+    private  void removeSessionByKey(Session session)
+    {
+        if(session!=null&&session.getClientNum()==0&&session.isLogicalClose())
+        {
+         //如果消失时已经超时，则要真正关闭;
+         session.close();
+       
+         Session ctmp= ClientSessionsPools.getSession(session.getLocalBindPort(), session.getSrcIP(), session.getSrcPort());
+         if(ctmp.getID()==session.getID())
+         {
+             //说明正在分配，必须删除；
+             String key="";
+             if(session.getLocalBindPort()==0)
+             {
+                 key=session.getSrcIP()+session.getSrcPort();
+             }
+             else
+             {
+                 key=session.getLocalBindPort()+session.getSrcIP()+session.getSrcPort();
+             }
+             ClientSessionsPools.removeKey(key);
+         }
+        }
+    }
    
 
 }

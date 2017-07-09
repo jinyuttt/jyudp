@@ -1,0 +1,74 @@
+/**    
+ * 文件名：MemoryPool.java    
+ *    
+ * 版本信息：    
+ * 日期：2017年7月9日    
+ * Copyright 足下 Corporation 2017     
+ * 版权所有    
+ *    
+ */
+package BufferData;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**    
+ *     
+ * 项目名称：NetProtocol    
+ * 类名称：MemoryPool    
+ * 类描述：    
+ * 创建人：jinyu    
+ * 创建时间：2017年7月9日 下午11:37:41    
+ * 修改人：jinyu    
+ * 修改时间：2017年7月9日 下午11:37:41    
+ * 修改备注：    
+ * @version     
+ *     
+ */
+public class MemoryPool {
+    /**
+     * 大小(M)
+     */
+private static int memorySize=300;
+/**
+ * 自己
+ */
+private static int blockSize=30;
+
+private static MemoryBlock[] memory=null;
+private static int readindex=0;
+public static HashMap<Long,ArrayList<Long>> hashMap=new HashMap<Long,ArrayList<Long>>();
+public  static void initMemoryBlock()
+{
+    int num=300*1000/(blockSize+16);
+    memory=new MemoryBlock[num];
+    for(int i=0;i<num;i++)
+    {
+        MemoryBlock tmp=new MemoryBlock(blockSize);
+        memory[i]=tmp;
+    }
+}
+public static MemoryChunk getBlock(int size)
+{
+    int num=size/blockSize;
+    int left=size/blockSize;
+    MemoryChunk chunk=new MemoryChunk(num+left);
+    for(int i=0;i<num;i++)
+    {
+       chunk.add(memory[(readindex++)%memory.length]);
+    }
+    if(left>0)
+    {
+        MemoryBlock tmp=memory[(readindex++)%memory.length];
+        tmp.dataLen=left;
+    }
+    return chunk;
+}
+public static void remove(MemoryChunk chunk)
+{
+    for(int i=0;i<chunk.data.length;i++)
+    {
+        hashMap.get(chunk.data[i].sessionid);
+    }
+}
+}

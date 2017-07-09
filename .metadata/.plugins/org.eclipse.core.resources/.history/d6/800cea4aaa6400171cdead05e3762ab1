@@ -1,0 +1,36 @@
+package Client;
+
+
+import java.util.concurrent.TimeUnit;
+
+import NetProtocol.judpClient;
+
+public class TestClient {
+
+    public static void main(String[] args) {
+        // TODO Auto-generated method stub
+while(true)
+{
+
+    int num=100;
+    while(num>0)
+    {
+   StringBuffer  str=new StringBuffer();
+   str.append("sjfhslghsdjsdfgsgsdg");
+
+
+    judpClient client=new judpClient();
+    byte[]senddata=str.toString().trim().getBytes();
+    client.sendData("192.168.3.139", 5555, senddata);
+    }
+
+  try {
+    TimeUnit.SECONDS.sleep(2);
+} catch (InterruptedException e) {
+    e.printStackTrace();
+}
+   
+}
+    }
+
+}

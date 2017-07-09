@@ -133,6 +133,7 @@ public class ServerSession extends Session {
         data.srcPort=this.getSrcPort();
         data.localIP=this.getLocalIP();
         data.localPort=this.getLocalPort();
+        data.srcid=this.getClientID();
         data.netData=all;
         readState++;
         MessageBus.post(String.valueOf(data.localPort), data);
@@ -141,6 +142,7 @@ public class ServerSession extends Session {
             queue.clear();
         }
         queue.tryTransfer(data);
+        System.out.println("完成sessionid:"+this.getID());
         judpServer tmp=  ServerManager.getSocket(data.localPort);
         if(tmp!=null)
         {
@@ -166,7 +168,8 @@ public class ServerSession extends Session {
            ack.packagetID=readInitSeq;
            ack.sessionid=this.getID();
            ack.ackType=1;
-           ack.sessionid=this.getID();
+           ack.clientID=this.getClientID();
+         
             byte[]senddata= CreateNetPackaget.createAckPackaget(ack);
             client.sendData(this.getSrcIP(), this.getSrcPort(), senddata);
             lastInitSeq=readInitSeq;//控制只发送一次
@@ -183,9 +186,10 @@ public class ServerSession extends Session {
         }
         //
 
-        buf[this.readbufIndex]=null;
+        buf[readbufIndex%bufsize]=null;
         if(buffer!=null)
         buffer.clear();
+        readbufIndex++;
         if(bufNum.get()<=0&&clientClose)
         {
             bufNum.set(0);
@@ -229,12 +233,12 @@ public class ServerSession extends Session {
   }
   
     @Override
-    public void sendData(String sIP, int sPort, byte[] data) {
+    public void sendData(long id,String sIP, int sPort, byte[] data) {
         
     }
 
     @Override
-    public void sendData(String localIP, int localPort, String sIP, int sPort, byte[] data) {
+    public void sendData(long id,String localIP, int localPort, String sIP, int sPort, byte[] data) {
         
     }
 
@@ -267,7 +271,7 @@ public class ServerSession extends Session {
         int len=0;
         readLen=0;
         buffer=buf[readbufIndex%bufsize];
-        int waitIndex=0;
+       // int waitIndex=0;
         while(buffer==null)
         {
         if(buffer==null)
@@ -280,17 +284,15 @@ public class ServerSession extends Session {
             else
             {
                 try {
-                    TimeUnit.SECONDS.sleep(1);
-                     waitIndex++;
+                    TimeUnit.MILLISECONDS.sleep(300);
+                    readbufIndex++;
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                if(waitIndex%2==0)
-                {
-                    readbufIndex++;
-                }
+               
             }
         }
+        buffer=buf[readbufIndex%bufsize];
         }
         
         //准备读取数据
@@ -373,6 +375,7 @@ public class ServerSession extends Session {
                             ack.packagetID=buffer.waitSequenceNumber();
                             ack.sessionid=this.getID();
                             ack.ackType=2;
+                            ack.clientID=this.getClientID();
                             byte[]data= CreateNetPackaget.createAckPackaget(ack);
                             client.sendData(this.getSrcIP(), this.getSrcPort(), data);
                             if(readNull>10)
@@ -509,6 +512,12 @@ public class ServerSession extends Session {
     @Override
     public void close() {
         this.setClose();
+    }
+
+    @Override
+    public int getClientNum() {
+     //接收端无用
+        return 0;
     }
 
 }

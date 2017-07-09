@@ -33,6 +33,7 @@ public class CacheData<K,V> {
                     .maximumSize(maxsize)
                     .initialCapacity(4)
                     .expireAfterAccess(time, TimeUnit.SECONDS)
+                    .weakValues()
                     .build(
                             new CacheLoader<K, V>() {
                          

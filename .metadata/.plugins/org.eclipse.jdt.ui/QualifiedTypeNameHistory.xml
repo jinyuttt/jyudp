@@ -17,7 +17,6 @@
 <fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
 <fullyQualifiedTypeName name="java.lang.ref.ReferenceQueue"/>
 <fullyQualifiedTypeName name="DataBus.CacheData"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="ListenClient.ClientManager"/>
 <fullyQualifiedTypeName name="DataBus.CacheListener"/>
 <fullyQualifiedTypeName name="NetProtocol.judpSocket"/>
@@ -27,7 +26,6 @@
 <fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
 <fullyQualifiedTypeName name="Sessions.SessionFactory"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ConcurrentHashMap"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="Sessions.ServerManager"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ConcurrentLinkedQueue"/>
 <fullyQualifiedTypeName name="NetProtocol.judpClient"/>
@@ -37,4 +35,8 @@
 <fullyQualifiedTypeName name="BufferData.AckPackaget"/>
 <fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
 <fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicLong"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="BufferData.MemoryChunk"/>
+<fullyQualifiedTypeName name="BufferData.MemoryPool"/>
 </qualifiedTypeNameHistroy>

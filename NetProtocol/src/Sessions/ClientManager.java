@@ -10,13 +10,13 @@
 package Sessions;
 
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import BufferData.WeakClient;
 import DataBus.CacheData;
 import DataBus.CacheListener;
 import DataBus.CacheTimeListenter;
@@ -38,12 +38,11 @@ import NetProtocol.judpClient;
  */
 public class ClientManager {
     
-    //private static WeakHashMap<judpClient,String> map=new WeakHashMap<judpClient,String>();
-    //private static HashMap<WeakReference<judpClient>,String> objmap=new HashMap<WeakReference<judpClient>,String>();
     private static ReferenceQueue<judpClient> gcQueue=new ReferenceQueue<judpClient>();
     private static ConcurrentHashMap<Long,Session> hashMap=new ConcurrentHashMap<Long,Session>();
-    private static CacheData<Long,WeakReference<judpClient>> cache=new CacheData<Long,WeakReference<judpClient>>(20000, 6000, false);
+    private static CacheData<Long,Session> cache=new CacheData<Long,Session>(20000, 30, false);
     private static  volatile boolean isStart=false;
+    private static ConcurrentHashMap<Long,WeakClient<judpClient>> hashMapClient=new ConcurrentHashMap<Long,WeakClient<judpClient>>();
     private static ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
     /*
      * 控制线程名称进行调整
@@ -57,6 +56,11 @@ public class ClientManager {
      {
          return "clientSession_"+threadName.getAndIncrement();
      }
+     
+     /**
+      * session判断自己关闭时使用
+        
+      */
     public static Session getSession(long id)
     {
         cache.remove(id);//session不用了，缓存也就没有用了
@@ -84,16 +88,20 @@ public class ClientManager {
    */
  public  static  void addClient(judpClient client)
 {
-    WeakReference<judpClient> tmp=new  WeakReference<judpClient>(client,gcQueue);
-    //map.put(client, "");
-   // objmap.put(tmp, "");
-    cache.put(client.getSessionID(), tmp);
+     WeakClient<judpClient> tmp=new WeakClient<judpClient>(client.getSessionID(),client,gcQueue);
+     tmp.okey=client.getID();
+     cache.put(client.getSessionID(), hashMap.get(client.getSessionID()));
+     hashMapClient.put(client.getID(), tmp);
     //
     check();
     
     
 }
-private static void check()
+  
+ /**
+  *检查回收
+  */
+ private static void check()
 {
     if(isStart)
     {
@@ -101,15 +109,38 @@ private static void check()
     }
     isStart=true;
     cachedThreadPool.execute(new Runnable() {
-
+      private  void removeSessionByKey(Session session,long id)
+      {
+          if(session!=null&&session.getClientNum()==0&&session.isLogicalClose())
+          {
+           //如果消失时已经超时，则要真正关闭;
+           session.close();
+           hashMap.remove(id);
+           Session ctmp= ClientSessionsPools.getSession(session.getLocalBindPort(), session.getSrcIP(), session.getSrcPort());
+           if(ctmp.getID()==session.getID())
+           {
+               //说明正在分配，必须删除；
+               String key="";
+               if(session.getLocalBindPort()==0)
+               {
+                   key=session.getSrcIP()+session.getSrcPort();
+               }
+               else
+               {
+                   key=session.getLocalBindPort()+session.getSrcIP()+session.getSrcPort();
+               }
+               ClientSessionsPools.removeKey(key);
+           }
+          }
+      }
         @Override
         public void run() {
-            CacheTimeListenter<Long, WeakReference<judpClient>> listener=new CacheListener();
+            CacheTimeListenter<Long,Session> listener=new CacheListener();
             cache.setListenter(listener);
             while(true)
             {
               
-                WeakReference<judpClient> tmp= (WeakReference<judpClient>) gcQueue.poll();
+                WeakClient<judpClient> tmp= (WeakClient<judpClient>) gcQueue.poll();
                 if(tmp==null)
                 {
                     //说明没有数据
@@ -120,17 +151,23 @@ private static void check()
                     }
                     continue;
                 }
-                tmp.get().close();//先有回收消失，则逻辑关闭，由监听控制关闭
-                long id=tmp.get().getSessionID();
-                if(tmp.get().isOutTime())
+                judpClient tmpClient=tmp.get();
+                if(tmpClient!=null)
                 {
-                    //如果消失时已经超时，则要真正关闭；
-                    Session session= hashMap.get(id);
-                    session.close();
-                    hashMap.remove(id);
+                    tmpClient.close();//先有回收消失，则逻辑关闭，由监听控制关闭
+                    long id=tmpClient.getSessionID();
+                    Session session=hashMap.get(id);
+                    removeSessionByKey(session,id);
+                }
+                else
+                {
+                    //直接获取session;
+                    long id=tmp.key;
+                    Session session=hashMap.get(id);
+                    removeSessionByKey(session,id);
                     
                 }
-               
+                hashMapClient.remove(tmp.okey);
               
             }
             

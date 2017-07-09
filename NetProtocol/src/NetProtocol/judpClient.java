@@ -10,8 +10,10 @@
 package NetProtocol;
 
 import NetModel.NetDataAddress;
+import NetPackaget.PackagetRandom;
+import Sessions.ClientManager;
 import Sessions.ClientSession;
-import Sessions.SessionFactory;
+import Sessions.ClientSessionsPools;
 
 /**    
  *     
@@ -30,22 +32,31 @@ import Sessions.SessionFactory;
 public class judpClient {
     public judpClient()
     {
-        clientSession=SessionFactory.createObj();
+        id=PackagetRandom.getSequeueID();
     }
     private  boolean isColse=false;
-    private  boolean managerOutTime=false;
+  //  private  boolean managerOutTime=false;
     private  ClientSession  clientSession=null;
-    public boolean isOutTime()
+    private long id=-1;
+    public  long  getID()
     {
-        return managerOutTime;
+        return id;
     }
-    public void setOutTime()
-    {
-        managerOutTime=true;
-    }
+//    public boolean isOutTime()
+//    {
+//        return managerOutTime;
+//    }
+//    public void setOutTime()
+//    {
+//        managerOutTime=true;
+//    }
  
     public long getSessionID()
     {
+        if(clientSession==null)
+        {
+            return -1;
+        }
       return  clientSession.getID();
     }
     /**
@@ -54,7 +65,12 @@ public class judpClient {
      */
     public void sendData(String sIP,int sPort,byte[]data)
     {
-        clientSession.sendData(sIP, sPort, data);
+       if(clientSession==null)
+       {
+           clientSession=ClientSessionsPools.getSession(0, sIP, sPort);
+       }
+       ClientManager.addClient(this);
+       clientSession.sendData(id,sIP, sPort, data);
     }
     /*
      * ·¢ËÍÊý¾Ý
@@ -62,8 +78,12 @@ public class judpClient {
      */
     public void sendData(String  localIP,int  localPort, String sIP,int sPort,byte[]data)
     {
-       
-        clientSession.sendData(localIP, localPort, sIP, sPort, data);
+        if(clientSession==null)
+        {
+            clientSession=ClientSessionsPools.getSession(localPort, sIP, sPort);
+            clientSession.setLocalBindPort(localPort);
+        }
+       clientSession.sendData(id,localIP, localPort, sIP, sPort, data);
     }
     
  
@@ -72,7 +92,7 @@ public class judpClient {
      */
     public void close()
     {
-        clientSession.setLogicalClose();
+        clientSession.setClientDecrement();
         isColse=true;
     }
     /**
@@ -80,7 +100,7 @@ public class judpClient {
      */
     public boolean isClose()
     {
-        clientSession.isLogicalClose();
+      
         return isColse;
     }
     

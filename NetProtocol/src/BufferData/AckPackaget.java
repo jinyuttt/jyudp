@@ -42,7 +42,11 @@ public long sessionid=0;
 public int  packagetNum=0;
 
 /**
- * ackType=2时使用
+ * ackType=2时为丢失ID
+ *  ackType=1时为包初始化ID
  */
 public long packagetID=-1;
+
+public long clientID=-1;
+
 }

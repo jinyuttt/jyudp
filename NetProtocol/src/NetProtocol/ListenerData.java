@@ -129,8 +129,9 @@ public void  monitorServer(DataModel monitorData)
         if(session==null||session.isClose())
         {
             session=createSession(single,monitorData.srcIP,monitorData.srcPort,monitorData.localIP,monitorData.localPort,returnCode.SessionID,monitorData.netType);
-            
+            session.setClientID(returnCode.clientid);
         }
+       
          session.addData(returnCode);
            
         } 
