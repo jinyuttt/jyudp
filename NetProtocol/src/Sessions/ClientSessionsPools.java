@@ -11,7 +11,7 @@ package Sessions;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import BufferData.MemoryPool;
+
 
 /**    
  *     
@@ -32,7 +32,7 @@ import BufferData.MemoryPool;
  */
 public class ClientSessionsPools {
  private static int maxClientNum=1000;
- private static boolean isInitMemory=true;
+
  public static ConcurrentHashMap<String,ControlSession> map=new ConcurrentHashMap<String,ControlSession>();
 
  /**
@@ -41,11 +41,6 @@ public class ClientSessionsPools {
  */
 public static synchronized ClientSession getSession(int port,String srcIP,int srcPort)
 {
-   if(isInitMemory)
-   {
-       isInitMemory=false;
-       MemoryPool.initMemoryBlock();
-   }
     String key="";
     if(port==0)
     {
@@ -56,7 +51,7 @@ public static synchronized ClientSession getSession(int port,String srcIP,int sr
     {
          key=port+srcIP+srcPort;
     }
-    ControlSession ctrsession=  map.get(key);
+    ControlSession ctrsession=map.get(key);
     if(ctrsession==null)
     {
         ctrsession=new ControlSession();
@@ -71,6 +66,16 @@ public static synchronized ClientSession getSession(int port,String srcIP,int sr
         map.remove(key);
     }
     ClientSession client=ctrsession.getSession();
+    if(client.isClose())
+    {
+        //更新；
+        map.remove(key);
+        ctrsession=new ControlSession();
+        ClientSession session= SessionFactory.createObj();
+        ctrsession.setSession(session);
+        ctrsession.setInitMax(maxClientNum);
+        map.put(key, ctrsession);
+    }
     client.setClientIncrement();//被客户端使用
     return client;
 }

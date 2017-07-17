@@ -18,8 +18,40 @@ public class CacheData<K,V> {
     public void setListenter(CacheTimeListenter<K, V> listener)
     {
         this.listener=listener;
+      
     }
-    
+    /**
+     * 构造函数
+     * maxsize 缓存最大数量
+     * time 缓存时间 秒
+     * isLoadDB 是否从数据库加载
+     */
+   public  CacheData(long maxsize,int time,boolean isLoadDB,CacheTimeListenter<K,V> listenerinit)
+  {
+       this.isLoadDB=isLoadDB;
+   cache = CacheBuilder.newBuilder()
+                    .maximumSize(maxsize)
+                    .initialCapacity(4)
+                    .removalListener(listenerinit)
+                    .expireAfterAccess(time, TimeUnit.SECONDS)
+                    .weakValues()
+                    .build(
+                            new CacheLoader<K, V>() {
+                         
+                                                @Override
+                                                public V load(K key) { // no checked exception
+                                                  if(isLoadDB)
+                                                  {
+                                                      return getDBKey( key);
+                                                  }
+                                                  else
+                                                  {
+                                                      return null;
+                                                  }
+                 
+                                                }});
+
+  }
     /**
      * 构造函数
      * maxsize 缓存最大数量
@@ -29,14 +61,16 @@ public class CacheData<K,V> {
    public  CacheData(long maxsize,int time,boolean isLoadDB)
   {
        this.isLoadDB=isLoadDB;
-   cache = (Cache<K, V>) CacheBuilder.newBuilder()
+   cache = CacheBuilder.newBuilder()
                     .maximumSize(maxsize)
                     .initialCapacity(4)
+                    .removalListener(listener)
                     .expireAfterAccess(time, TimeUnit.SECONDS)
                     .weakValues()
                     .build(
                             new CacheLoader<K, V>() {
                          
+                                                @Override
                                                 public V load(K key) { // no checked exception
                                                   if(isLoadDB)
                                                   {
@@ -64,6 +98,7 @@ public class CacheData<K,V> {
    */
  public void put(K key, V v)
  {
+     if(v!=null)
      cache.put(key, v);
  }
  

@@ -22,7 +22,8 @@ while(true)
     judpClient client=new judpClient();
     byte[]senddata=str.toString().trim().getBytes();
     client.sendData("192.168.3.139", 5555, senddata);
-    System.out.println("sessionid:"+client.getSessionID());
+    client.close();
+   // System.out.println("sessionid:"+client.getSessionID());
     id++;
    }
 

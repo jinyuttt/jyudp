@@ -137,6 +137,7 @@ public void  monitorServer(DataModel monitorData)
         } 
     
     /*
+     * 
      * 创建session
      */
     private synchronized  Session  createSession(SessionMap<Long,Session> single,String srcIP,int srcPort,String localIP,int localPort,long sessionid,int netType)
@@ -154,7 +155,9 @@ public void  monitorServer(DataModel monitorData)
     }
     
     /*
+     * 
      * 创建SessionMap
+     * 
      */
     private synchronized  SessionMap<Long,Session> createcreateSessionMap(String key)
     {

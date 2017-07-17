@@ -3,8 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetModel"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
-	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/guava-22.0.jar"/>
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/fastjson-1.2.9.jar"/>
+	<classpathentry kind="lib" path="E:/Study/java/jyudp/lib/fastjson-1.2.9.jar"/>
+	<classpathentry kind="lib" path="E:/Study/java/jyudp/lib/guava-22.0.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PersistDB"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

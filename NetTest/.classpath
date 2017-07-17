@@ -6,5 +6,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/NetSocket"/>
 	<classpathentry kind="lib" path="E:/Study/java/DataStorm/lib/guava-22.0.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/NetModel"/>
+	<classpathentry kind="lib" path="D:/jinyu/MapDB/lib/kotlin-stdlib-1.2-M1.jar"/>
+	<classpathentry kind="lib" path="D:/jinyu/MapDB/lib/eclipse-collections-8.2.0.jar"/>
+	<classpathentry kind="lib" path="E:/Study/java/jyudp/PersistDB/lib/mapdb-1.0.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

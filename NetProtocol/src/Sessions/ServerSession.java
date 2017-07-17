@@ -117,6 +117,7 @@ public class ServerSession extends Session {
      * 设置返回
      * 只是在发送方接收数据使用
      */
+    @Override
     public void setCall()
     {
         isCall=true;
@@ -518,6 +519,12 @@ public class ServerSession extends Session {
     public int getClientNum() {
      //接收端无用
         return 0;
+    }
+
+    @Override
+    public byte[] removeData(long packagetid) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

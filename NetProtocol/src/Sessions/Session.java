@@ -31,6 +31,7 @@ import NetPackaget.ReturnCode;
 public abstract class Session {
    
     protected ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+    public long createTime=System.currentTimeMillis();
     public Session(String srcIP,int srcPort,String localIP,int localPort)
     {
         this.srcIP=srcIP;
@@ -187,5 +188,5 @@ public abstract void addData(ReturnCode returnCode);
 public abstract NetDataAddress read();
 public abstract NetDataAddress read(int len);
 public abstract int getClientNum();
-
+public abstract byte[] removeData(long packagetid);
 }

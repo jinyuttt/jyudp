@@ -52,7 +52,8 @@ public class PackagetRandom {
 public static long getSessionID()
 {
     Random r = new Random(UUID.randomUUID().hashCode());
-    return  r.nextInt()*100+Calendar.getInstance().MINUTE;
+    Calendar.getInstance();
+    return  r.nextInt()*100+Calendar.MINUTE;
 }
 
 /*

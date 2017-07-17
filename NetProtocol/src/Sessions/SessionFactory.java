@@ -31,7 +31,6 @@ public class SessionFactory {
         long id=PackagetRandom.getSessionID();
         session.setID(id);
         return session;
-        
     }
     public static ClientSession createObj()
     {
@@ -46,7 +45,5 @@ public class SessionFactory {
        }
        session.setID(id);
         return session;
-       
-        
     }
 }

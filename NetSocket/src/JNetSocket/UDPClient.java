@@ -154,7 +154,7 @@ public void sendData(String host,int port,byte[]data)
         try {
            socket.receive(backPacket);
        } catch (IOException e) {
-           e.printStackTrace();
+           return null;
        } 
         //
         int len=backPacket.getLength();
