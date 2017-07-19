@@ -35,22 +35,12 @@ public class judpClient {
         id=PackagetRandom.getSequeueID();
     }
     private  boolean isColse=false;
-  //  private  boolean managerOutTime=false;
     private  ClientSession  clientSession=null;
     private long id=-1;
     public  long  getID()
     {
         return id;
     }
-//    public boolean isOutTime()
-//    {
-//        return managerOutTime;
-//    }
-//    public void setOutTime()
-//    {
-//        managerOutTime=true;
-//    }
- 
     public long getSessionID()
     {
         if(clientSession==null)
