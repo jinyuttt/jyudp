@@ -24,9 +24,9 @@ package StoreDisk;
  */
 public class MemoryManager<K,V> {
   private  MemoryDisk<K, V> objDB=null;
-  static MemoryManager instance=null;
+  //static MemoryManager instance=null;
   public static String fileDB="";
-  private String curType="MapDB";
+ // private String curType="MapDB";
  
   public MemoryManager()
   {
@@ -34,21 +34,21 @@ public class MemoryManager<K,V> {
   }
   public void setType(String type)
   {
-      curType=type;
+     // curType=type;
       if(type.equalsIgnoreCase("PalDB"))
       {
           objDB=new MemoryPalDB<K,V>();
       }
   }
-  public static MemoryManager getInstance()
-  {
-      if(instance==null)
-      {
-          instance=new MemoryManager();
-      }
-    return instance;
-      
-  }
+//  public static MemoryManager getInstance()
+//  {
+//      if(instance==null)
+//      {
+//          instance=new MemoryManager();
+//      }
+//    return instance;
+//      
+//  }
   public void put(K key,V val)
   {
       objDB.putFile(key, val);

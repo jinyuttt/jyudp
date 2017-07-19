@@ -54,6 +54,7 @@ public  class MemoryMapDB<K,V> extends MemoryDisk<K,V>{
         init();  
     } 
     //≥ı ºªØmapdb
+    @SuppressWarnings("unchecked")
     @Override
     void init()  
     {  

@@ -395,6 +395,7 @@ public class ClientManager {
             while(true)
             {
               
+                @SuppressWarnings("unchecked")
                 WeakClient<judpClient> tmp= (WeakClient<judpClient>) gcQueue.poll();
                 if(tmp==null)
                 {
