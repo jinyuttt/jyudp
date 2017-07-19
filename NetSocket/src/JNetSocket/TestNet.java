@@ -28,14 +28,6 @@ public class TestNet {
 
     /**    
        
-     * main(这里用一句话描述这个方法的作用)    
-       
-     * TODO(这里描述这个方法适用条件 – 可选)    
-     * @param   name    
-     * @return 
-       
-     * @Exception 异常对象        
-       
     */
     public static void main(String[] args) {
         MulticastClient client =new MulticastClient();
