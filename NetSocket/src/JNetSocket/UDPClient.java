@@ -81,6 +81,7 @@ public void sendData(String host,int port,byte[]data)
             socket.send(dataGramPacket);
         } catch (IOException e) {
             e.printStackTrace();
+            return;
         }  //通过套接字发送数据  
         remoteAddr=host;
         remotePort=port;

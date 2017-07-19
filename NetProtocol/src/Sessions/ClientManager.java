@@ -22,10 +22,10 @@ import BufferData.SessionData;
 import BufferData.WeakClient;
 import DataBus.CacheData;
 import DataBus.CacheListener;
+import FileStore.FileMemoryData;
 import NetProtocol.judpClient;
 import NetProtocol.judpSocket;
 import StoreDisk.MemoryManager;
-import StoreDisk.MemoryPalDBManager;
 import Tools.PathTool;
 
 /**    
@@ -96,7 +96,8 @@ public class ClientManager {
       */
      private static  MemoryManager<String,byte[]> cacheDB=null;
     
-    private static  MemoryPalDBManager palDB=null;
+   // private static  MemoryPalDBManager palDB=null;
+     private static  FileMemoryData<String,byte[]>  fileDB=null;
      /**
       * 清除文件数据
       */
@@ -118,7 +119,7 @@ public class ClientManager {
         data.sessionid=sessionid;
         data.packagetid=packagetid;
         preCache.add(data);
-       if(num>maxMemorySize*1000)
+       if(num>maxMemorySize*1024*1024)
        {
            //启动清除；
            startThread();
@@ -147,7 +148,8 @@ public class ClientManager {
      public static byte[] getDBData(long sessionid,long packagetid)
      {
        // return  cacheDB.get(sessionid+":"+packagetid);
-         return palDB.get(sessionid, sessionid+":"+packagetid);
+        // return palDB.get(sessionid, sessionid+":"+packagetid);
+         return fileDB.get(sessionid+":"+packagetid);
      }
      
      /*
@@ -212,17 +214,29 @@ public class ClientManager {
 //             MemoryManager.fileDB=PathTool.getDirPath(new judpSocket())+"/clientDB.db";
 //             cacheDB=new  MemoryManager<String,byte[]>();
 //         }
-         if(palDB==null)
+//         if(palDB==null)
+//         {
+//             palDB=new MemoryPalDBManager();
+//             String dir=PathTool.getDirPath(new judpSocket())+"/sessiondata";
+//             File file=new File(dir);
+//             if(file.exists())
+//             {
+//                 file.delete();
+//             }
+//             file.mkdir();
+//             palDB.setDir(dir);
+//         }
+         if(fileDB==null)
          {
-             palDB=new MemoryPalDBManager();
+             fileDB=new FileMemoryData<String, byte[]>();
              String dir=PathTool.getDirPath(new judpSocket())+"/sessiondata";
              File file=new File(dir);
-             if(file.exists())
-             {
-                 file.delete();
-             }
-             file.mkdir();
-             palDB.setDir(dir);
+              if(file.exists())
+                 {
+                     file.delete();
+                }
+                 file.mkdir();
+                 fileDB.setDir(dir);
          }
          cachedThreadPool.execute(new Runnable() {
 
@@ -230,7 +244,7 @@ public class ClientManager {
             public void run() {
                 Thread.currentThread().setName("memoryRemove");
              //先清除
-                long sum=0;
+               long sum=0;
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
@@ -239,17 +253,18 @@ public class ClientManager {
                 }
                 //
                 boolean isDBAll=false;
-                if(sessionCacheData.get()>(maxMemorySize+50)*1000)
+                if(sessionCacheData.get()>(maxMemorySize+50)*1024*1024)
                 {
                     waiData++;
                     isDBAll=true;
                 }
                 
-             while(sum<varSize*1000||isDBAll)
+             while(sum<varSize*1024*1024||isDBAll)
              {
                  if(sessionCacheData.get()<(maxMemorySize+50)*1000)
                  {
-                    isDBAll=false;
+                     //大于50M就一直清除
+                     isDBAll=false;
                  }
                SessionData tmp=  preCache.poll();
                if(tmp==null)
@@ -272,7 +287,9 @@ public class ClientManager {
                     {
                         sum+=tmp.len;
                        // cacheDB.put(tmp.sessionid+":"+tmp.packagetid, data);
-                        palDB.put(tmp.sessionid, tmp.sessionid+":"+tmp.packagetid, data);
+                       // palDB.put(tmp.sessionid, tmp.sessionid+":"+tmp.packagetid, data);
+                        
+                        fileDB.put(tmp.sessionid+":"+tmp.packagetid, data);
                     }
                }
              }

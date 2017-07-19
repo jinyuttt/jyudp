@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="RecviceData.ClientSession"/>
-<fullyQualifiedTypeName name="com.google.common.eventbus.Subscribe"/>
-<fullyQualifiedTypeName name="RecviceData.ServerSession"/>
-<fullyQualifiedTypeName name="NetPackaget.SubPackaget"/>
-<fullyQualifiedTypeName name="NetPackaget.PackagetRandom"/>
-<fullyQualifiedTypeName name="FactoryPackaget.SubNetPackaget"/>
 <fullyQualifiedTypeName name="NetProtocol.ListenerServer"/>
 <fullyQualifiedTypeName name="NetModel.DataModel"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ExecutorService"/>
@@ -26,7 +20,6 @@
 <fullyQualifiedTypeName name="NetModel.NetDataAddress"/>
 <fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
 <fullyQualifiedTypeName name="java.util.concurrent.atomic.AtomicLong"/>
-<fullyQualifiedTypeName name="java.util.HashMap"/>
 <fullyQualifiedTypeName name="BufferData.MemoryChunk"/>
 <fullyQualifiedTypeName name="BufferData.MemoryPool"/>
 <fullyQualifiedTypeName name="BufferData.MemoryMapDB"/>
@@ -37,9 +30,6 @@
 <fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ConcurrentLinkedQueue"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ConcurrentHashMap"/>
-<fullyQualifiedTypeName name="java.util.Map"/>
-<fullyQualifiedTypeName name="java.util.ArrayList"/>
-<fullyQualifiedTypeName name="java.io.File"/>
 <fullyQualifiedTypeName name="BufferData.AckPackaget"/>
 <fullyQualifiedTypeName name="NetPackaget.CreateNetPackaget"/>
 <fullyQualifiedTypeName name="Sessions.Session"/>
@@ -48,7 +38,26 @@
 <fullyQualifiedTypeName name="BufferData.SessionData"/>
 <fullyQualifiedTypeName name="NetProtocol.judpSocket"/>
 <fullyQualifiedTypeName name="NetPackaget.ReturnCode"/>
-<fullyQualifiedTypeName name="JNetSocket.UDPServerSocket"/>
-<fullyQualifiedTypeName name="EventBus.MessageBus"/>
 <fullyQualifiedTypeName name="JNetSocket.UDPClient"/>
+<fullyQualifiedTypeName name="EventBus.MessageBus"/>
+<fullyQualifiedTypeName name="JNetSocket.UDPServerSocket"/>
+<fullyQualifiedTypeName name="java.nio.channels.FileChannel"/>
+<fullyQualifiedTypeName name="java.nio.MappedByteBuffer"/>
+<fullyQualifiedTypeName name="java.nio.channels.FileChannel.MapMode"/>
+<fullyQualifiedTypeName name="java.io.BufferedOutputStream"/>
+<fullyQualifiedTypeName name="java.io.FileInputStream"/>
+<fullyQualifiedTypeName name="java.io.FileOutputStream"/>
+<fullyQualifiedTypeName name="java.io.Serializable"/>
+<fullyQualifiedTypeName name="java.util.HashMap"/>
+<fullyQualifiedTypeName name="java.io.ByteArrayInputStream"/>
+<fullyQualifiedTypeName name="java.io.ObjectInputStream"/>
+<fullyQualifiedTypeName name="java.io.ByteArrayOutputStream"/>
+<fullyQualifiedTypeName name="java.io.ObjectOutputStream"/>
+<fullyQualifiedTypeName name="Tools.ObjectByte"/>
+<fullyQualifiedTypeName name="java.io.File"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="FileStore.FileMemoryData"/>
 </qualifiedTypeNameHistroy>

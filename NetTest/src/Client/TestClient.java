@@ -9,26 +9,52 @@ public class TestClient {
 
     public static void main(String[] args) {
        long id=-1;
+       long sum=0;
 while(true)
 {
 
-   int num=100;
+   int num=1000;
    while(num>0)
     {
      StringBuffer  str=new StringBuffer();
-     str.append("sjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");  
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
+     str.append("sjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdgsjfhslghsdjsdfgsgsdg");
      str.append(id);
-
     judpClient client=new judpClient();
     byte[]senddata=str.toString().trim().getBytes();
     client.sendData("192.168.3.139", 5555, senddata);
     client.close();
+  
    // System.out.println("sessionid:"+client.getSessionID());
     id++;
+    sum+=senddata.length;
+    num--;
    }
 
   try {
-    TimeUnit.SECONDS.sleep(10);
+      System.out.println("senddata:"+sum);
+    TimeUnit.SECONDS.sleep(1);
 } catch (InterruptedException e) {
     e.printStackTrace();
 }

@@ -108,7 +108,7 @@ public class ClientSession extends Session {
               {
                   if(isClose())
                   {
-                      System.out.println( Thread.currentThread().getName()+"ÍË³ö");
+                     // System.out.println( Thread.currentThread().getName()+"ÍË³ö");
                       break;
                   }
                   recCall();
