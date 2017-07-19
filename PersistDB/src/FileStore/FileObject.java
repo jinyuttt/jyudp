@@ -21,7 +21,7 @@ import java.io.ObjectOutputStream;
  *     
  * 项目名称：PersistDB    
  * 类名称：FileObject    
- * 类描述：    
+ * 类描述：    保存对象
  * 创建人：jinyu    
  * 创建时间：2017年7月19日 下午8:47:33    
  * 修改人：jinyu    

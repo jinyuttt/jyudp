@@ -15,7 +15,7 @@ import java.io.Serializable;
  *     
  * 项目名称：PersistDB    
  * 类名称：FileIndex    
- * 类描述：    
+ * 类描述：    文件对应的数据索引
  * 创建人：jinyu    
  * 创建时间：2017年7月19日 下午9:28:45    
  * 修改人：jinyu    

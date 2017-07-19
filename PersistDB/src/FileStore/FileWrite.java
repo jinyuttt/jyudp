@@ -22,7 +22,7 @@ import java.nio.channels.FileChannel;
  *     
  * 项目名称：PersistDB    
  * 类名称：FileWrite    
- * 类描述：    
+ * 类描述：    文件写入
  * 创建人：jinyu    
  * 创建时间：2017年7月19日 下午8:47:17    
  * 修改人：jinyu    
@@ -32,9 +32,21 @@ import java.nio.channels.FileChannel;
  *     
  */
 public class FileWrite {
+    
+    /*
+     * 文件路径
+     */
  String path="";
+ /**
+  * 是否追加文件
+  * 默认追加
+  */
  boolean append=true;
  private long fileMax=2*1024*1024*1024;//2G字节
+ 
+ /*
+  * 写入小文件
+  */
 public long writeSmall(byte[]data)
 {
     File fout=new File(path);
@@ -53,6 +65,9 @@ public long writeSmall(byte[]data)
     }
     return len;
 }
+/**
+ * 写入大文件
+ */
 @SuppressWarnings("resource")
 public long write(byte[]data)
 {
@@ -76,6 +91,10 @@ public long write(byte[]data)
     System.gc();
     return fout.length()+data.length;
 }
+
+/**
+ * 写入文件
+ */
 public long writeFile(byte[]data)
 {
     File f=new File(path);
@@ -105,6 +124,11 @@ public long writeFile(byte[]data)
       return  write(data);
     }
 }
+
+/**
+ * 返回当前文件大小
+ * 
+ */
 public long getFile()
 {
     File f=new File(path);
