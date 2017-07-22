@@ -19,6 +19,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import Tools.DirFilter;
 import Tools.ObjectByte;
@@ -28,6 +29,12 @@ import Tools.ObjectByte;
  * 项目名称：PersistDB    
  * 类名称：FileMemoryData    
  * 类描述：   通过文件保存
+ * 一旦设置了整理文件，则有2份索引数据
+ * 一份是hashmap,在内存中提供查询支持
+ * 一份是内存数据库表中，支持最新修改工作
+ * 理论上hashmap可以不要了，直接从内存表中查询，但是没有准确的测试表明
+ * 内存表查询有hashmap快，而且很多时候是不需要整理文件大小的，所以同时保留了
+ * 当然这可以作为优化的一部分
  * 创建人：jinyu    
  * 创建时间：2017年7月19日 下午8:42:41    
  * 修改人：jinyu    
@@ -38,20 +45,19 @@ import Tools.ObjectByte;
  */
 public class FileMemoryData<K,V> {
     private long fileMax=1*1024*1024*1024;//1G字节
-   // FileRead reader=null;
-   // FileWrite writer=null;
     private ConcurrentHashMap<K,V> cache=new  ConcurrentHashMap<K,V>();
-    HashMap<K,FileIndex<K>> findex=new HashMap<K,FileIndex<K>>();
-    private volatile long sum=0;
+     public  HashMap<K,FileIndex<K>> findex=new HashMap<K,FileIndex<K>>();
+    private volatile long sum=0;//准备存储的数据量
     private volatile byte valType=-1;//0是byte[] 1是对象
     private volatile byte typeLen=-1;
-    private volatile boolean isRunning=false;
-    private volatile boolean isDeleteRunning=false;
+    private volatile boolean isRunning=false;//文件存储
+    private volatile boolean isDeleteRunning=false;//删除启动
     String  dataDir="sessiondata";
     String  dataFile=System.currentTimeMillis()+".DB";
     private final long  timeLen=10*60*1000;//毫秒
+    public  volatile boolean isModifyFile=false;//是否更新文件大小
     private ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
-    
+   
     public void setDir(String dir)
     {
         dataDir=dir;
@@ -63,6 +69,7 @@ public class FileMemoryData<K,V> {
     */
     public V get(K key)
     {
+      
      V val=cache.get(key);
      if(val==null)
      {
@@ -98,6 +105,7 @@ public class FileMemoryData<K,V> {
      */
     public void put(K key,V val)
     {
+        
         cache.put(key, val);
         if(valType==-1)
         {
@@ -137,7 +145,15 @@ public class FileMemoryData<K,V> {
         FileIndex<K> f= findex.get(key);
         if(f!=null)
         {
-            f.flage=1;
+            if(isModifyFile)
+            {
+                DataDeleteIndex indexmem=new DataDeleteIndex();
+                indexmem.fileid=f.fileid;
+                indexmem.flage=2;
+                indexmem.len=f.len;
+                indexmem.position=f.position;
+                FileModifyManager.addDataDeleteIndex(indexmem);
+            }
         }
     }
    
@@ -184,6 +200,7 @@ public class FileMemoryData<K,V> {
         cachedThreadPool.execute(new Runnable() {
             @Override
             public void run() {
+                sum=0;//启动后置回；
                 Thread.currentThread().setName("FileStore");
              //判断文件大小；
                 File f=new File(dataDir+"/"+dataFile);
@@ -191,12 +208,36 @@ public class FileMemoryData<K,V> {
                 {
                     dataFile=System.currentTimeMillis()+".DB";
                 }
+                //
+                if(FileModifyManager.fileName.equalsIgnoreCase(dataFile))
+                {
+                   try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                 
+                    e.printStackTrace();
+                }
+                    isRunning=false;
+                    return;
+                }
                 FileWrite  fw=new FileWrite();
                 fw.path=dataDir+"/"+dataFile;
                 long position=fw.getFile();
                 //遍历：
                  ArrayList<K>  list=new ArrayList<K>();
                  for (Entry<K, V> entry: cache.entrySet()) {
+                     //
+                     if(FileModifyManager.fileName.equalsIgnoreCase(dataFile))
+                     {
+                        try {
+                         TimeUnit.SECONDS.sleep(1);
+                     } catch (InterruptedException e) {
+                      
+                         e.printStackTrace();
+                     }
+                        break;
+                     }
+                     
                   K key = entry.getKey();
                   V value = entry.getValue();
                   byte[] data=null;
@@ -240,11 +281,41 @@ public class FileMemoryData<K,V> {
                   //
                   FileIndex<K> index=new FileIndex<K>();
                   index.fileid=dataFile;
-                  index.flage=0;
+                 
                   index.key=key;
                   index.len=data.length;
                   index.position=position;
                   position+=index.len;
+                  if(isModifyFile)
+                  {
+                      //FileModifyManager.hashindex= (HashMap<String, FileIndex<String>>)findex;
+                      DataDeleteIndex indexmem=new DataDeleteIndex();
+                      indexmem.fileid=dataFile;
+                      indexmem.flage=0;
+                      indexmem.len=index.len;
+                      indexmem.position=position;
+                     if(findex.containsKey(key))
+                     {
+                         
+                         //说明是修改
+                         indexmem.flage=1;
+                         FileModifyManager.addDataDeleteIndex(indexmem);
+                         //记录旧数据
+                         //
+                         FileIndex<K> oldtmp=   findex.get(key);
+                          indexmem=new DataDeleteIndex();
+                         indexmem.fileid=oldtmp.fileid;
+                         indexmem.flage=2;
+                         indexmem.len=oldtmp.len;
+                         indexmem.position=oldtmp.position;
+                         FileModifyManager.addFile(indexmem);
+                     }
+                     else
+                     {
+                        
+                         FileModifyManager.addDataDeleteIndex(indexmem);
+                     }
+                  }
                   findex.put(key, index);
                   list.add(key);
                 }
@@ -254,7 +325,7 @@ public class FileMemoryData<K,V> {
                   cache.remove(list.get(i));
               }
                list.clear();
-                isRunning=false;
+               isRunning=false;
                 System.gc();
                 //判断是否删除；
                 File dir=new File(dataDir);
@@ -379,13 +450,25 @@ public class FileMemoryData<K,V> {
                         if(list.contains(entry.getValue().fileid))
                           {
                               entries.remove();
+                              if(isModifyFile)
+                              {
+                                  FileIndex<K> tmp=entry.getValue();
+                              
+                                  DataDeleteIndex indexmem=new DataDeleteIndex();
+                                  indexmem.fileid=tmp.fileid;
+                                  indexmem.flage=2;
+                                  indexmem.len=tmp.len;
+                                  indexmem.position=tmp.position;
+                                  FileModifyManager.addDataDeleteIndex(indexmem);
+                              }
                           }
                     }
                 }  
                 FileObject objsw=new FileObject();
                 objsw.path=dataDir+"/"+"data.index";
                 objsw.writeObject(findex);
-            }
+            
         }
+    }
     }
 }

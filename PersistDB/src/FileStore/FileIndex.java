@@ -36,5 +36,4 @@ public K key;
 public long position;
 public int len;
 public String fileid;
-public byte flage=0;
 }

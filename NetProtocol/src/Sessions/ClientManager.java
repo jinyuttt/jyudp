@@ -23,6 +23,7 @@ import BufferData.WeakClient;
 import DataBus.CacheData;
 import DataBus.CacheListener;
 import FileStore.FileMemoryData;
+import FileStore.FileModifyManager;
 import NetProtocol.judpClient;
 import NetProtocol.judpSocket;
 import StoreDisk.MemoryManager;
@@ -229,6 +230,10 @@ public class ClientManager {
          if(fileDB==null)
          {
              fileDB=new FileMemoryData<String, byte[]>();
+            // if(fileDB.isModifyFile)
+            // {
+                 FileModifyManager.hashindex=fileDB.findex;
+            // }
              String dir=PathTool.getDirPath(new judpSocket())+"/sessiondata";
              File file=new File(dir);
               if(file.exists())

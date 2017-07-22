@@ -27,5 +27,9 @@ package FileStore;
  *     
  */
 public class DataDeleteIndex {
-
+public String fileid;//文件
+public long position;//索引位置
+public int len;//长度
+public byte flage=0;//0插入，1修改，2删除
+public String key;
 }
