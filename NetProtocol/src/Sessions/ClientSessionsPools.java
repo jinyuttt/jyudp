@@ -62,6 +62,7 @@ public static synchronized ClientSession getSession(int port,String srcIP,int sr
     }
     if(ctrsession.getNum()==0)
     {
+        //分配完重新分配
         //更新；
         map.remove(key);
     }

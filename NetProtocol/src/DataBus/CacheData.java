@@ -31,7 +31,7 @@ public class CacheData<K,V> {
        this.isLoadDB=isLoadDB;
    cache = CacheBuilder.newBuilder()
                     .maximumSize(maxsize)
-                    .initialCapacity(4)
+                    .initialCapacity(10)
                     .removalListener(listenerinit)
                     .expireAfterAccess(time, TimeUnit.SECONDS)
                     .weakValues()
@@ -63,7 +63,7 @@ public class CacheData<K,V> {
        this.isLoadDB=isLoadDB;
    cache = CacheBuilder.newBuilder()
                     .maximumSize(maxsize)
-                    .initialCapacity(4)
+                    .initialCapacity(10)
                     .removalListener(listener)
                     .expireAfterAccess(time, TimeUnit.SECONDS)
                     .weakValues()

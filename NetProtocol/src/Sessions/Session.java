@@ -144,6 +144,7 @@ public void setNetType(int type)
 
 /**
  * 设置逻辑关闭
+ * 时间到期
  */
 public void setLogicalClose()
 {
@@ -180,13 +181,50 @@ public long getClientID()
 {
     return clientid;
 }
+/**
+ * 关闭
+ */
 public abstract void close();
+
+/**
+ * 
+ * 设置返回
+ */
 public abstract void setCall();
+
+/*
+ * 发送数据
+ */
 public abstract void sendData(long id,String sIP,int sPort,byte[]data);
+
+/*
+ * 发送数据
+ */
 public  abstract void sendData(long id,String  localIP,int  localPort, String sIP,int sPort,byte[]data);
+
+/*
+ * 加入解析数据
+ */
 public abstract void addData(ReturnCode returnCode);
+
+/*
+ * 读取数据
+ */
 public abstract NetDataAddress read();
+
+/*
+ * 读取定长度的数据
+ */
 public abstract NetDataAddress read(int len);
+
+/*
+ * 获取占用的客户端数据
+ * 主要是发送端
+ */
 public abstract int getClientNum();
+
+/*
+ * 清除数据
+ */
 public abstract byte[] removeData(long packagetid);
 }

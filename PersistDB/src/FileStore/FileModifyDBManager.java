@@ -10,7 +10,7 @@
 package FileStore;
 
 
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
@@ -29,13 +29,14 @@ import java.util.concurrent.Executors;
  * @version     
  *     
  */
-public class FileModifyManager {
+public class FileModifyDBManager {
     /**
      * 文件不允许修改暂时
      */
 public static String fileName="";
 
 public static boolean isCreate=true;
+public static String dataDir="";
 
 /*
  * 还没有更新到内存的索引数据量
@@ -84,7 +85,7 @@ private static void start()
 
         @Override
         public void run() {
-         
+            filemodify.dataDir=dataDir;
         StringBuffer buf=new StringBuffer();
          while(isRuning)
          {

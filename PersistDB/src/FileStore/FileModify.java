@@ -37,6 +37,7 @@ public class FileModify {
    private final long maxSize=1*1024*1024*1024;//到达
    private   long sum=0;
    private ExecutorService cachedThreadPool = Executors.newCachedThreadPool();
+   public String dataDir="";
   private HashMap<String,ArrayList<DataDeleteIndex>> hash=new HashMap<String,ArrayList<DataDeleteIndex>>();
   public void addFile(DataDeleteIndex index)
    {
@@ -88,13 +89,25 @@ public class FileModify {
     {
         String fileid=entry.getKey();
         String tmpfile=fileid+".tmp";
+        String fileFull="";
+        String tmpgileFull="";
+        if(dataDir.isEmpty())
+        {
+            fileFull=fileid;
+            tmpgileFull=tmpfile;
+        }
+        else
+        {
+            fileFull=dataDir+"/"+fileid;
+            tmpgileFull=dataDir+"/"+tmpfile;
+        }
         ArrayList<DataDeleteIndex> data=entry.getValue();
         DataDeleteIndex[] moidydata= sortIndex(data);
         long offset=0;
         FileRead read=new FileRead();
-        read.path=fileid;
+        read.path=fileFull;
         FileWrite sw=new FileWrite();
-        sw.path=tmpfile;
+        sw.path=tmpgileFull;
         for(int i=0;i<moidydata.length;i++)
         {
            DataDeleteIndex index=moidydata[i];
@@ -107,17 +120,17 @@ public class FileModify {
            FileDBManager.getObj().exeSql(sql);
         }
         //拷贝剩余数据
-        File f=new File(fileid);
+        File f=new File(fileFull);
         long leftBytes=f.length()-offset;
         offset=copyData(read,sw,offset,leftBytes,0);
        
         //再次比较数据
-        File ff=new File(fileid);
+        File ff=new File(fileFull);
         
         if(ff.length()!=sw.getFile())
         {
             //不再写入该文件
-            FileModifyManager.fileName=fileid;
+            FileModifyDBManager.fileName=fileid;
             //再次拷贝所有数据
              leftBytes=ff.length()-sw.getFile();
              offset=copyData(read,sw,offset,leftBytes,0);
@@ -125,13 +138,13 @@ public class FileModify {
         //更新索引
         //产生索引数据
         //修改文件；
-        FileModifyManager.hashindex.putAll(getIndex(fileid));
+        FileModifyDBManager.hashindex.putAll(getIndex(fileid));
         ff.delete();
-        File newFile=new File(tmpfile);
+        File newFile=new File(tmpgileFull);
         newFile.renameTo(ff);
         data.clear();
         //
-        FileModifyManager.fileName="";
+        FileModifyDBManager.fileName="";
     }
     //再次遍历清理数据
     Iterator<Entry<String, ArrayList<DataDeleteIndex>>> it = hash.entrySet().iterator();  

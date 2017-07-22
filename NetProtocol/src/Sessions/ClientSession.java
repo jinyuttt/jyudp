@@ -55,6 +55,7 @@ public class ClientSession extends Session {
   /**
    * 判断客户端使用情况
    * 被客户端使用一次则增加一次
+   * 客户端关闭一次则减少一次
    * 由于判断客户端回收
    */
   private AtomicInteger clientNum=new AtomicInteger(0);
@@ -236,6 +237,11 @@ public class ClientSession extends Session {
     }
     @Override
     public void close() {
+        if(this.isClose())
+        {
+            return;//外部在时间或者消失控制时可能是多线程调用
+           
+        }
         this.setClose();
         //先发送关闭
         AckPackaget ack=new AckPackaget();

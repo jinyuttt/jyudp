@@ -23,7 +23,7 @@ import BufferData.WeakClient;
 import DataBus.CacheData;
 import DataBus.CacheListener;
 import FileStore.FileMemoryData;
-import FileStore.FileModifyManager;
+import FileStore.FileModifyDBManager;
 import NetProtocol.judpClient;
 import NetProtocol.judpSocket;
 import StoreDisk.MemoryManager;
@@ -58,7 +58,7 @@ public class ClientManager {
     /**
      * 缓存，计时
      */
-    private static CacheData<Long,Session> cache=new CacheData<Long,Session>(50000, 30, false,new CacheListener());
+    private static CacheData<Long,Session> cache=new CacheData<Long,Session>(5000, 30, false,new CacheListener());
    
     /**
      * 控制线程启动
@@ -84,8 +84,10 @@ public class ClientManager {
       */
      private static  AtomicLong sessionCacheData=new AtomicLong(0);
      
-     /*
+     /**
       * 保存session信息
+      * 用于删除数据
+      * sessionid
       */
      private static  ConcurrentLinkedQueue<SessionData> preCache=new ConcurrentLinkedQueue<SessionData>();
      private static  boolean isStartCache=false;
@@ -111,10 +113,11 @@ public class ClientManager {
      private static  volatile  int waiData=0;
      /*
       * 添加长度
+      * 获取seesion的数据信息
       */
      public static void addSessionData(long sessionid,long packagetid,long len)
      {
-        long num=  sessionCacheData.addAndGet(len);
+        long num=  sessionCacheData.addAndGet(len+16);
         SessionData data=new SessionData();
         data.len=(int) len;
         data.sessionid=sessionid;
@@ -232,7 +235,7 @@ public class ClientManager {
              fileDB=new FileMemoryData<String, byte[]>();
             // if(fileDB.isModifyFile)
             // {
-                 FileModifyManager.hashindex=fileDB.findex;
+                 FileModifyDBManager.hashindex=fileDB.findex;
             // }
              String dir=PathTool.getDirPath(new judpSocket())+"/sessiondata";
              File file=new File(dir);
@@ -287,7 +290,7 @@ public class ClientManager {
                if(s!=null)
                {
                     byte[] data=s.removeData(tmp.packagetid);
-                    sessionCacheData.getAndAdd(-tmp.len);
+                    sessionCacheData.getAndAdd(-tmp.len-16);
                     if(data!=null)
                     {
                         sum+=tmp.len;
@@ -346,7 +349,7 @@ public class ClientManager {
   /**
    * 添加发送端
    */
-   public  static  void addClient(judpClient client)
+ public  static  void addClient(judpClient client)
 {
      WeakClient<judpClient> tmp=new WeakClient<judpClient>(client.getSessionID(),client,gcQueue);
      tmp.okey=client.getID();
@@ -355,8 +358,17 @@ public class ClientManager {
     //
     check();
     
-    
 }
+ 
+ /*
+  * session添加都缓存
+  * 当前cache时间控制不准
+  * 研究中，专门增加接口
+  */
+ public static void addCache(Session session)
+ {
+     cache.put(session.getID(), hashMap.get(session.getID()));
+ }
   
  /**
   *检查回收
@@ -369,8 +381,9 @@ public class ClientManager {
     }
     isStart=true;
     cachedThreadPool.execute(new Runnable() {
-      private  void removeSessionByKey(Session session,long id)
+ private  void removeSessionByKey(Session session,long id)
       {
+        //客户端消失
           if(session!=null&&session.getClientNum()==0&&session.isLogicalClose())
           {
            //如果消失时已经超时，则要真正关闭;

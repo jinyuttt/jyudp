@@ -34,7 +34,7 @@ import Sessions.Session;
  *     
  */
 public class CacheListener extends CacheTimeListenter<Long, Session> {
-
+  private final long checkTime=30*1000;//秒
     @Override
     public void onRemoval(RemovalNotification<Long,  Session> arg) {
         
@@ -54,14 +54,21 @@ public class CacheListener extends CacheTimeListenter<Long, Session> {
         else
         {
             //没有外部引用；***待定
+            //验证代码
+            if(System.currentTimeMillis()-client.createTime<checkTime)
+          {
+                ClientManager.addCache(client);
+                return;
+          }
             client.setLogicalClose();
             if(client.getClientNum()==0)
             {
                 //超时时已经关闭，则真正关闭
+                
                 Session session=ClientManager.getSession(arg.getKey());
                 if(session!=null)
                 {
-                   
+                    session.setLogicalClose();
                     session.close();
                     removeSessionByKey(session);
                 }

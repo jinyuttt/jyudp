@@ -61,6 +61,7 @@ public class FileMemoryData<K,V> {
     public void setDir(String dir)
     {
         dataDir=dir;
+        FileModifyDBManager.dataDir=dir;
     }
     @SuppressWarnings("unchecked")
    
@@ -152,7 +153,7 @@ public class FileMemoryData<K,V> {
                 indexmem.flage=2;
                 indexmem.len=f.len;
                 indexmem.position=f.position;
-                FileModifyManager.addDataDeleteIndex(indexmem);
+                FileModifyDBManager.addDataDeleteIndex(indexmem);
             }
         }
     }
@@ -209,7 +210,7 @@ public class FileMemoryData<K,V> {
                     dataFile=System.currentTimeMillis()+".DB";
                 }
                 //
-                if(FileModifyManager.fileName.equalsIgnoreCase(dataFile))
+                if(FileModifyDBManager.fileName.equalsIgnoreCase(dataFile))
                 {
                    try {
                     TimeUnit.SECONDS.sleep(1);
@@ -227,7 +228,7 @@ public class FileMemoryData<K,V> {
                  ArrayList<K>  list=new ArrayList<K>();
                  for (Entry<K, V> entry: cache.entrySet()) {
                      //
-                     if(FileModifyManager.fileName.equalsIgnoreCase(dataFile))
+                     if(FileModifyDBManager.fileName.equalsIgnoreCase(dataFile))
                      {
                         try {
                          TimeUnit.SECONDS.sleep(1);
@@ -299,7 +300,7 @@ public class FileMemoryData<K,V> {
                          
                          //说明是修改
                          indexmem.flage=1;
-                         FileModifyManager.addDataDeleteIndex(indexmem);
+                         FileModifyDBManager.addDataDeleteIndex(indexmem);
                          //记录旧数据
                          //
                          FileIndex<K> oldtmp=   findex.get(key);
@@ -308,12 +309,12 @@ public class FileMemoryData<K,V> {
                          indexmem.flage=2;
                          indexmem.len=oldtmp.len;
                          indexmem.position=oldtmp.position;
-                         FileModifyManager.addFile(indexmem);
+                         FileModifyDBManager.addFile(indexmem);
                      }
                      else
                      {
                         
-                         FileModifyManager.addDataDeleteIndex(indexmem);
+                         FileModifyDBManager.addDataDeleteIndex(indexmem);
                      }
                   }
                   findex.put(key, index);
@@ -459,7 +460,7 @@ public class FileMemoryData<K,V> {
                                   indexmem.flage=2;
                                   indexmem.len=tmp.len;
                                   indexmem.position=tmp.position;
-                                  FileModifyManager.addDataDeleteIndex(indexmem);
+                                  FileModifyDBManager.addDataDeleteIndex(indexmem);
                               }
                           }
                     }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.util.WeakHashMap"/>
 <fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
 <fullyQualifiedTypeName name="java.lang.ref.ReferenceQueue"/>
 <fullyQualifiedTypeName name="DataBus.CacheData"/>
@@ -60,4 +59,5 @@
 <fullyQualifiedTypeName name="FileStore.FileModifyManager"/>
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="java.util.Map"/>
+<fullyQualifiedTypeName name="FileStore.FileModifyDBManager"/>
 </qualifiedTypeNameHistroy>
