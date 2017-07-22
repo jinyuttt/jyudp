@@ -205,7 +205,7 @@ public class ServerSession extends Session {
     }
   private  void intBuffer(int num,long initSeq)
   {
-      if(num==-1)
+      if(num==-1||initSeq==-1)
       {
           return;
       }
