@@ -58,7 +58,7 @@ public static byte[] createNetPackaget(long id,long sessionid,long initseq,long 
 public static byte[] createAckPackaget(AckPackaget ack)
 {
   int len=0;
-  if(ack.ackType==2||ack.ackType==1)
+  if(ack.ackType==2||ack.ackType==1||ack.ackType==0)
   {
       len=30;
   }
@@ -74,7 +74,7 @@ public static byte[] createAckPackaget(AckPackaget ack)
     buf.putLong(ack.clientID);
     buf.putLong(ack.sessionid);
     buf.putInt(ack.packagetNum);
-    if(ack.ackType==2||ack.ackType==1)
+    if(ack.ackType==2||ack.ackType==1||ack.ackType==0)
     {
         buf.putLong(ack.packagetID);
     }
@@ -143,13 +143,18 @@ public static ReturnCode  AnalysisNetPackaget(byte[]netdata)
         ack.packagetNum=num;
         ack.sessionid=sessionid;
         ack.clientID=clientid;
-        if(acktype==2||acktype==1)
+        if(acktype==2||acktype==1||acktype==0)
         {
             ack.packagetID=buf.getLong();
         }
         code.isAck=true;
         code.ackPackaget=ack;
-        
+        //
+        if(acktype==0)
+        {
+            code.InitSeq=ack.packagetID;
+            code.packagetNum=ack.packagetNum;
+        }
     }
     }
     catch(Exception ex)

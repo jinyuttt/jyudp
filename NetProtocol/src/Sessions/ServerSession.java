@@ -205,6 +205,10 @@ public class ServerSession extends Session {
     }
   private  void intBuffer(int num,long initSeq)
   {
+      if(num==-1)
+      {
+          return;
+      }
           preBuf=buf[(int) (initSeq%bufsize)];
           if(preBuf==null)
           {
@@ -257,7 +261,7 @@ public class ServerSession extends Session {
             {
                 this.clientClose=true;
             }
-            
+            return;
         }
         AppData buf=new AppData(returnCode.packagetNum,returnCode.InitSeq,returnCode.PackagetID, returnCode.data);
         setData(buf);

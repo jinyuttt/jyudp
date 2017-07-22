@@ -43,7 +43,8 @@ public int  packagetNum=0;
 
 /**
  * ackType=2时为丢失ID
- *  ackType=1时为包初始化ID
+ *  ackType=0，1时为包初始化ID
+ * ,
  */
 public long packagetID=-1;
 

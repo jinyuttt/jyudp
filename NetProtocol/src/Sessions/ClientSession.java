@@ -157,9 +157,18 @@ public class ClientSession extends Session {
           index--;
        }
         startThread();//启动监听
+        //发送端确认发送acks
+        //防止单包数据丢失
+        AckPackaget ack=new AckPackaget();
+        ack.ackType=0;
+        ack.clientID=id;
+        ack.packagetNum=size;
+        ack.sessionid=getID();
+        ack.packagetID=initseq;
+        byte[] ackbytes= CreateNetPackaget.createAckPackaget(ack);
+        client.sendData(sIP, sPort, ackbytes);
         //
-       
-       
+      
     }
 
     @Override
