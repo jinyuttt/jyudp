@@ -81,8 +81,8 @@ public class ClientSession extends Session {
      */
     private void recCall()
     {
-        NetDataAddress data= client.getCallData();
-        DataModel model=new DataModel();
+       NetDataAddress data= client.getCallData();
+       DataModel model=new DataModel();
        if(data!=null)
        {
         model.srcIP=data.srcIP;
@@ -104,12 +104,12 @@ public class ClientSession extends Session {
 
             @Override
             public void run() {
-            Thread.currentThread().setName(ClientManager.getThreadName());
+            Thread.currentThread().setName("clientSession_"+getID());
               while(true)
               {
                   if(isClose())
                   {
-                     // System.out.println( Thread.currentThread().getName()+"ÍË³ö");
+                      System.out.println( Thread.currentThread().getName()+"ÍË³ö");
                       break;
                   }
                   recCall();
@@ -196,7 +196,11 @@ public class ClientSession extends Session {
               int size= pSize ;
               for(int i=0;i<=size;i++)
               {
-                  mapCache.remove(returnCode.ackPackaget.packagetID+i);
+                byte[] cachedata= mapCache.remove(returnCode.ackPackaget.packagetID+i);
+                if(cachedata==null)
+                {
+                    ClientManager.addRemoveFile(getID(), returnCode.ackPackaget.packagetID+i);;
+                }
               }
               mapInitSeq.remove(returnCode.ackPackaget.packagetID);
               if(this.isLogicalClose()&&mapInitSeq.isEmpty())
@@ -210,8 +214,15 @@ public class ClientSession extends Session {
             }
             else if(returnCode.ackPackaget.ackType==2)
             {
-              
                byte[] data=mapCache.get(returnCode.ackPackaget.packagetID);
+               if(data==null)
+               {
+                  data=ClientManager.getDBData(getID(), returnCode.ackPackaget.packagetID);
+               }
+               if(data==null)
+               {
+                   System.out.println("¶ªÊ§£º"+returnCode.ackPackaget.clientID);
+               }
                this.sendData(returnCode.ackPackaget.clientID,this.srcIP, this.port, data);
             }
         }

@@ -90,7 +90,7 @@ public class UDPServerSocket  {
                     }
                     catch(Exception ex)
                     {
-                        
+                        System.out.println("Ω” ’¥ÌŒÛ£∫"+ex.getMessage());
                     }
                 
             }

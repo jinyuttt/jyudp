@@ -64,7 +64,6 @@ public class judpServer {
                 listener=new ListenerData();
                 //所有使用封装都发送到该实例
                 MessageBus.register("udp", listener);
-              
                 ServerManager.addSocket(port, this);
             }
         }

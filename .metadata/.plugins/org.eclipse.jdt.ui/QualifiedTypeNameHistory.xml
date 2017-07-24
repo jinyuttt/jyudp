@@ -17,9 +17,7 @@
 <fullyQualifiedTypeName name="BufferData.MemoryPool"/>
 <fullyQualifiedTypeName name="BufferData.MemoryMapDB"/>
 <fullyQualifiedTypeName name="Tools.PathTool"/>
-<fullyQualifiedTypeName name="java.util.concurrent.locks.Lock"/>
 <fullyQualifiedTypeName name="java.util.concurrent.locks.Condition"/>
-<fullyQualifiedTypeName name="java.util.concurrent.locks.ReentrantLock"/>
 <fullyQualifiedTypeName name="java.util.concurrent.LinkedTransferQueue"/>
 <fullyQualifiedTypeName name="java.util.concurrent.ConcurrentHashMap"/>
 <fullyQualifiedTypeName name="BufferData.AckPackaget"/>
@@ -60,4 +58,6 @@
 <fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="java.util.Map"/>
 <fullyQualifiedTypeName name="FileStore.FileModifyDBManager"/>
+<fullyQualifiedTypeName name="java.util.concurrent.locks.ReentrantLock"/>
+<fullyQualifiedTypeName name="java.util.concurrent.locks.Lock"/>
 </qualifiedTypeNameHistroy>

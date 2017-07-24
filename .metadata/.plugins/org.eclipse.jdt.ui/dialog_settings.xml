@@ -9,7 +9,7 @@
 	<item value="500" key="CallHierarchyViewPart.ratio3"/>
 	<item value="false" key="TypeHierarchyViewPart.qualifiednames"/>
 	<item value="0" key="CallHierarchyViewPart.call_mode"/>
-	<item value="E:\Study\java\jyudp\PersistDB\lib" key="org.eclipse.jdt.ui.lastextjar"/>
+	<item value="E:\Study\java\jyudp\lib" key="org.eclipse.jdt.ui.lastextjar"/>
 	<item value="D:\jinyu\eclipse模板,注释" key="org.eclipse.jdt.ui.codeformatter.loadpath"/>
 	<item value="3" key="CallHierarchyViewPart.orientation"/>
 	<item value="filter_imports;" key="filters_last_used"/>
@@ -73,13 +73,13 @@
 	</section>
 	<section name="FatJarPackageWizard">
 		<item value="E:\Study\java\jyudp" key="FatJarPackageWizardPage.ANTSCRIPT_LOCATION"/>
-		<item value="TestServer - NetTest" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
-		<item value="E:\Study\java\jyudp\jar\server.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
+		<item value="TestClient - NetTest" key="FatJarPackageWizardPage.LAUNCH_CONFIGURATION_SELECTION_NAME"/>
+		<item value="E:\Study\java\jyudp\jar\client.jar" key="FatJarPackageWizardPage.DESTINATION_PATH_SELECTION"/>
 		<item value="false" key="FatJarPackageWizardPage.ANTSCRIPT_SAVE"/>
 		<item value="1" key="FatJarPackageWizardPage.LIBRARY_HANDLING"/>
 		<list key="FatJarPackageWizardPage.DESTINATION_NAMES_ID">
-			<item value="E:\Study\java\jyudp\jar\server.jar"/>
 			<item value="E:\Study\java\jyudp\jar\client.jar"/>
+			<item value="E:\Study\java\jyudp\jar\server.jar"/>
 			<item value="E:\Study\java\jyudp\server.jar"/>
 			<item value="E:\Study\java\jyudp\client.jar"/>
 		</list>

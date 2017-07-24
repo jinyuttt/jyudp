@@ -11,6 +11,8 @@ package NetProtocol;
 
 
 import java.util.concurrent.ConcurrentHashMap;
+
+
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
@@ -41,6 +43,7 @@ import Sessions.SessionFactory;
  */
 public class ListenerData {
     Session client=null;
+  //  private Lock lock = new ReentrantLock();// 锁对象  
   public  ListenerData(Session clientSession)
   {
       client=clientSession;
@@ -125,7 +128,15 @@ public void  monitorServer(DataModel monitorData)
             single= createcreateSessionMap(key);
         }
         
-        Session session=single.get(returnCode.SessionID);
+         Session session=null;
+         if(returnCode.isAck)
+         {
+             session=single.get(returnCode.ackPackaget.sessionid);
+         }
+         else
+         {
+             session= single.get(returnCode.SessionID);
+         }
         if(session==null||session.isClose())
         {
             session=createSession(single,monitorData.srcIP,monitorData.srcPort,monitorData.localIP,monitorData.localPort,returnCode.SessionID,monitorData.netType);
@@ -133,6 +144,7 @@ public void  monitorServer(DataModel monitorData)
         }
        
          session.addData(returnCode);
+         Thread.yield();
            
         } 
     
@@ -150,7 +162,6 @@ public void  monitorServer(DataModel monitorData)
            session.setID(sessionid);
            session.setNetType(netType);   
         }
-          
         return session;
     }
     
@@ -159,9 +170,9 @@ public void  monitorServer(DataModel monitorData)
      * 创建SessionMap
      * 
      */
-    private synchronized  SessionMap<Long,Session> createcreateSessionMap(String key)
+    private synchronized SessionMap<Long,Session> createcreateSessionMap(String key)
     {
-        SessionMap<Long,Session> single=  hashOffer.get(key);
+        SessionMap<Long,Session> single=hashOffer.get(key);
         if(single==null)
         {
           single=new  SessionMap<Long,Session>();

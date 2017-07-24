@@ -133,7 +133,6 @@ public class ClientManager {
              try {
                 TimeUnit.MILLISECONDS.sleep(100);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
           }
@@ -194,7 +193,12 @@ public class ClientManager {
                }
                if(cacheDB!=null)
                cacheDB.deleteByKey(key);
-              }
+               if(fileDB!=null)
+               {
+                   fileDB.delete(key);
+               }
+               }
+             
               isStartFile=false;  
              }
               
@@ -408,8 +412,7 @@ public class ClientManager {
       }
         @Override
         public void run() {
-           // CacheTimeListenter<Long,Session> listener=new CacheListener();
-          //  cache.setListenter(listener);
+           Thread.currentThread().setName("judpClientCheck");
             while(true)
             {
               

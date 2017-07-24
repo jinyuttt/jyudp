@@ -13,7 +13,7 @@ public class TestClient {
 while(true)
 {
 
-   int num=1000;
+   int num=100;
    while(num>0)
     {
      StringBuffer  str=new StringBuffer();
@@ -44,7 +44,7 @@ while(true)
     judpClient client=new judpClient();
     byte[]senddata=str.toString().trim().getBytes();
     client.sendData("192.168.3.139", 5555, senddata);
-    client.close();
+    //client.close();
     id++;
     sum+=senddata.length;
     num--;
@@ -52,7 +52,7 @@ while(true)
 
   try {
       System.out.println("senddata:"+sum);
-    TimeUnit.SECONDS.sleep(1);
+    TimeUnit.SECONDS.sleep(60);
 } catch (InterruptedException e) {
     e.printStackTrace();
 }

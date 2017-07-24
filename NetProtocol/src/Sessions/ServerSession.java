@@ -56,14 +56,17 @@ public class ServerSession extends Session {
     private int readState=0;//读取状态
     private long readLen=0;//读取长度
     private long readOffset=0;//外部读取长度
-    private long lastInitSeq=-1;
+    private long lastInitSeq=-1;//最新一次初始序列
     private long readInitSeq=0;//读取的initseq
-    private volatile boolean clientClose=false;
+    private volatile boolean clientClose=false;//session关闭
     private int readbufIndex=0;
-    private final int bufsize=128;
+    private final int bufsize=2000;
     private ReceiveBuffer[] buf=new ReceiveBuffer[bufsize];
     private AtomicLong  bufNum=new AtomicLong(0);
-    private volatile boolean isStartData=false;
+    private volatile boolean isStartData=false;//读取线程触发
+    private volatile boolean zeroNum=true;//当前还是一包都没有读取;
+    private volatile int zeroRead=0;//当前首包读取次数
+    
     //private ConcurrentHashMap<Long,ReceiveBuffer> mapBuf=new ConcurrentHashMap<Long,ReceiveBuffer>();
     public ServerSession(String srcIP, int srcPort, String localIP, int localPort) {
        super(srcIP,srcPort,localIP,localPort);
@@ -83,11 +86,11 @@ public class ServerSession extends Session {
         cachedThreadPool.execute(new Runnable(){
             @Override
             public void run() {
-                Thread.currentThread().setName(ServerManager.getThreadName());
+                Thread.currentThread().setName(ServerManager.getThreadName()+"_"+getID());
                 if(bufNum.get()==0)
                 {
                     try {
-                        TimeUnit.SECONDS.sleep(2);
+                        TimeUnit.MILLISECONDS.sleep(100);
                     } catch (InterruptedException e) {
                       
                         e.printStackTrace();
@@ -97,7 +100,18 @@ public class ServerSession extends Session {
                 checkRecvice();
                 if(bufNum.get()==0)
                 {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                   if(bufNum.get()>0)
+                   {
+                       continue;
+                   }
                     isStartData=false;
+                    ReceiveBuffer[] buftmp=buf;
+                    int ss= readbufIndex;
                     System.gc();
                     System.out.println( Thread.currentThread().getName()+"退出");
                     //数据接收完成；
@@ -223,11 +237,9 @@ public class ServerSession extends Session {
                   lock.unlock();
               }
               buf[(int) (initSeq%bufsize)]=preBuf;
-              bufNum.getAndIncrement();
+              bufNum.incrementAndGet();
           }
           startThread();
-      
-     
   }
   /*
    * 保存
@@ -272,6 +284,12 @@ public class ServerSession extends Session {
      */
     private byte[] readAll()
     {
+//      try {
+//        TimeUnit.MILLISECONDS.sleep(100);
+//    } catch (InterruptedException e1) {
+//    
+//        e1.printStackTrace();
+//    }
         list.clear();
         int len=0;
         readLen=0;
@@ -288,12 +306,13 @@ public class ServerSession extends Session {
             }
             else
             {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(300);
-                    readbufIndex++;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                readbufIndex++;
+//                try {
+//                    TimeUnit.MILLISECONDS.sleep(10);
+//                    readbufIndex++;
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
                
             }
         }
@@ -321,6 +340,7 @@ public class ServerSession extends Session {
                     readInitSeq=currentChunk.getInitSequenceNumber();
                     currentChunk=null;
                     readNull=0;//重置，可以通讯
+                    zeroNum=false;
                     //
                     if(buffer.isEmpty())
                     {
@@ -353,6 +373,16 @@ public class ServerSession extends Session {
                   
                    return all;
                }
+               if(zeroRead>0&&zeroNum)
+               {
+                   try {
+                    TimeUnit.SECONDS.sleep(5);
+                  
+                } catch (InterruptedException e) {
+                  
+                    e.printStackTrace();
+                }
+               }
             
         }
              
@@ -366,13 +396,12 @@ public class ServerSession extends Session {
         while(true){
             try{
                 if(block){
-                     currentChunk=buffer.poll(1, TimeUnit.MILLISECONDS);//整个取出
+                     currentChunk=buffer.poll(100, TimeUnit.MILLISECONDS);//整个取出
                     while (currentChunk==null){
                         //循环直到取出
                         currentChunk=buffer.poll(1000, TimeUnit.MILLISECONDS);
                         if(currentChunk==null)
                         {
-                           
                             //可能丢包了
                             readNull++;
                             UDPClient client=new UDPClient();
@@ -391,7 +420,10 @@ public class ServerSession extends Session {
                         }
                     }
                 }
-                else currentChunk=buffer.poll(100, TimeUnit.MILLISECONDS);
+                else {
+                        currentChunk=buffer.poll(100, TimeUnit.MILLISECONDS);
+                        zeroRead++;
+                    }
                //不管取不取都执行
             }catch(InterruptedException ie){
                 IOException ex=new IOException();
