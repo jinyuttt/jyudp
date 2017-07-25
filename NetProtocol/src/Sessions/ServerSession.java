@@ -110,8 +110,8 @@ public class ServerSession extends Session {
                        continue;
                    }
                     isStartData=false;
-                    ReceiveBuffer[] buftmp=buf;
-                    int ss= readbufIndex;
+                 //   ReceiveBuffer[] buftmp=buf;
+                 //   int ss= readbufIndex;
                     System.gc();
                     System.out.println( Thread.currentThread().getName()+"退出");
                     //数据接收完成；
@@ -284,17 +284,11 @@ public class ServerSession extends Session {
      */
     private byte[] readAll()
     {
-//      try {
-//        TimeUnit.MILLISECONDS.sleep(100);
-//    } catch (InterruptedException e1) {
-//    
-//        e1.printStackTrace();
-//    }
         list.clear();
         int len=0;
         readLen=0;
         buffer=buf[readbufIndex%bufsize];
-       // int waitIndex=0;
+        boolean isWait=false;
         while(buffer==null)
         {
         if(buffer==null)
@@ -306,17 +300,23 @@ public class ServerSession extends Session {
             }
             else
             {
-                readbufIndex++;
-//                try {
-//                    TimeUnit.MILLISECONDS.sleep(10);
-//                    readbufIndex++;
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-               
+                if(isWait)
+                {
+                  readbufIndex++;
+                  isWait=false;//置回下次等待
+                }
+                else
+                {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                    isWait=true;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                }
             }
         }
-        buffer=buf[readbufIndex%bufsize];
+          buffer=buf[readbufIndex%bufsize];
         }
         
         //准备读取数据

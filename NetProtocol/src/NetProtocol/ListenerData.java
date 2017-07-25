@@ -11,7 +11,8 @@ package NetProtocol;
 
 
 import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
@@ -43,7 +44,9 @@ import Sessions.SessionFactory;
  */
 public class ListenerData {
     Session client=null;
+   private ConcurrentLinkedQueue<DataModel> queue=new ConcurrentLinkedQueue<DataModel>();
   //  private Lock lock = new ReentrantLock();// Ëø¶ÔÏó  
+   private volatile boolean isStart=false;
   public  ListenerData(Session clientSession)
   {
       client=clientSession;
@@ -63,6 +66,63 @@ public class ListenerData {
     @AllowConcurrentEvents
 public void  monitorServer(DataModel monitorData)
 {
+        queue.offer(monitorData);
+        startThread();
+}
+ private void startThread()
+ {
+     if(isStart)
+     {
+         return;
+     }
+     isStart=true;
+     Thread procedata=new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+           int sum=0;
+           while(true)
+           {
+               if(sum>1000)
+               {
+                   sum=0;
+                   try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                 
+                    e.printStackTrace();
+                }
+               }
+               DataModel data=queue.poll();
+               if(data==null)
+               {
+                   sum=0;
+                   try {
+                    TimeUnit.SECONDS.sleep(1);
+                    if(queue.isEmpty())
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                } catch (InterruptedException e) {
+                }
+               }
+               sum++;
+               processData(data);
+           }
+           isStart=false;
+        }
+         
+     });
+     procedata.setDaemon(true);
+     procedata.setName("udpRecprocess");
+     procedata.start();
+ }
+ private void processData(DataModel monitorData)
+    {
         ReturnCode returnCode=CreateNetPackaget.AnalysisNetPackaget(monitorData.data);
         if(returnCode.isAck)
         {
@@ -144,9 +204,9 @@ public void  monitorServer(DataModel monitorData)
         }
        
          session.addData(returnCode);
-         Thread.yield();
            
-        } 
+        
+    }
     
     /*
      * 

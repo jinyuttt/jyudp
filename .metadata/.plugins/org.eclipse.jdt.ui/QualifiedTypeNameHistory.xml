@@ -1,10 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <qualifiedTypeNameHistroy>
-<fullyQualifiedTypeName name="java.lang.ref.WeakReference"/>
-<fullyQualifiedTypeName name="java.lang.ref.ReferenceQueue"/>
-<fullyQualifiedTypeName name="DataBus.CacheData"/>
-<fullyQualifiedTypeName name="ListenClient.ClientManager"/>
-<fullyQualifiedTypeName name="DataBus.CacheListener"/>
 <fullyQualifiedTypeName name="java.util.concurrent.SynchronousQueue"/>
 <fullyQualifiedTypeName name="java.util.concurrent.TransferQueue"/>
 <fullyQualifiedTypeName name="Sessions.SessionFactory"/>
@@ -44,20 +39,25 @@
 <fullyQualifiedTypeName name="java.io.ByteArrayOutputStream"/>
 <fullyQualifiedTypeName name="java.io.ObjectOutputStream"/>
 <fullyQualifiedTypeName name="Tools.ObjectByte"/>
-<fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
 <fullyQualifiedTypeName name="FileStore.FileMemoryData"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
 <fullyQualifiedTypeName name="java.io.File"/>
-<fullyQualifiedTypeName name="java.util.concurrent.ConcurrentLinkedQueue"/>
 <fullyQualifiedTypeName name="java.sql.Connection"/>
 <fullyQualifiedTypeName name="java.sql.DriverManager"/>
 <fullyQualifiedTypeName name="java.sql.Statement"/>
-<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
 <fullyQualifiedTypeName name="java.sql.ResultSet"/>
 <fullyQualifiedTypeName name="FileStore.FileModifyManager"/>
-<fullyQualifiedTypeName name="java.util.Iterator"/>
 <fullyQualifiedTypeName name="java.util.Map"/>
 <fullyQualifiedTypeName name="FileStore.FileModifyDBManager"/>
 <fullyQualifiedTypeName name="java.util.concurrent.locks.ReentrantLock"/>
 <fullyQualifiedTypeName name="java.util.concurrent.locks.Lock"/>
+<fullyQualifiedTypeName name="java.nio.channels.DatagramChannel"/>
+<fullyQualifiedTypeName name="java.nio.ByteBuffer"/>
+<fullyQualifiedTypeName name="java.net.InetSocketAddress"/>
+<fullyQualifiedTypeName name="java.nio.channels.Selector"/>
+<fullyQualifiedTypeName name="java.nio.channels.SelectionKey"/>
+<fullyQualifiedTypeName name="java.util.Iterator"/>
+<fullyQualifiedTypeName name="java.lang.Integer"/>
+<fullyQualifiedTypeName name="java.util.concurrent.ConcurrentLinkedQueue"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
 </qualifiedTypeNameHistroy>

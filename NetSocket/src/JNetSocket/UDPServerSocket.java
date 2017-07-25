@@ -4,9 +4,15 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Iterator;
 
 import EventBus.MessageBus;
 import NetModel.DataModel;
@@ -16,6 +22,7 @@ public class UDPServerSocket  {
     private DatagramSocket socket;
     SocketAddress sendAddress=null;
     private boolean isRuning=true;
+    
     /*
      * 初始化监听
      */
@@ -55,8 +62,11 @@ public class UDPServerSocket  {
             e.printStackTrace();
         }
         Thread recData=new Thread(new Runnable(){
-            @Override
-            public void run() {
+            /*
+             * 
+             */
+            private void recviceData()
+            {
                 byte[] buf = new byte[65535];  //定义byte数组  
                 String curIP="";
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);  //创建DatagramPacket对象  
@@ -95,6 +105,115 @@ public class UDPServerSocket  {
                 
             }
                 socket.close();//跳出循环则关闭
+            }
+            
+            /*
+             * 
+             */
+            private void recviceChannel()
+            {
+                socket.close();
+                Selector selector = null;
+                try  
+                {  
+                    // 打开一个UDP Channel  
+                    DatagramChannel channel = DatagramChannel.open();  
+          
+                    // 设定为非阻塞通道  
+                    channel.configureBlocking(false);  
+                    // 绑定端口  
+                    if(host==null||host.isEmpty()||host.equals("host"))
+                    {
+                    channel.socket().bind(new InetSocketAddress(port));  
+                    }
+                    else
+                    {
+                        InetAddress addr = null;
+                        try {
+                            addr = InetAddress.getByName(host);
+                        } catch (UnknownHostException e) {
+                            e.printStackTrace();
+                            return ;
+                        }
+                        channel.socket().bind(new InetSocketAddress(addr,port));
+                    }
+          
+                    // 打开一个选择器  
+                    selector = Selector.open();  
+                    channel.register(selector, SelectionKey.OP_READ);  
+                } catch (Exception e)  
+                {  
+                    e.printStackTrace();  
+                }  
+          
+                ByteBuffer byteBuffer = ByteBuffer.allocate(65536);  
+                while (true)  
+                {  
+                    try  
+                    {  
+                        // 进行选择  
+                        int n = selector.select();  
+                        if (n > 0)  
+                        {  
+                            // 获取以选择的键的集合  
+                            Iterator<?> iterator = selector.selectedKeys().iterator();  
+          
+                            while (iterator.hasNext())  
+                            {  
+                                SelectionKey key = (SelectionKey) iterator.next();  
+          
+                                // 必须手动删除  
+                                iterator.remove();  
+          
+                                if (key.isReadable())  
+                                {  
+                                    DatagramChannel datagramChannel = (DatagramChannel) key  
+                                            .channel();  
+          
+                                    byteBuffer.clear();  
+                                    // 读取  
+                                    String curIP="";
+                                    SocketAddress address = datagramChannel.receive(byteBuffer); // read into buffer. 返回客户端的地址信息  
+                                    String clientAddress = address.toString().replace("/", "").split(":")[0];  
+                                    String clientPost = address.toString().replace("/", "").split(":")[1]; 
+                                    curIP=datagramChannel.getLocalAddress().toString();
+                                    byteBuffer.flip();
+                                    byte[] data=new byte[byteBuffer.limit()];
+                                    byteBuffer.get(data);
+                                    byteBuffer.clear(); 
+                                    DataModel  dataModel=new DataModel();
+                                    dataModel.data=data;
+                                    dataModel.netType=1;
+                                    dataModel.srcIP=clientAddress;
+                                    dataModel.srcPort=Integer.valueOf(clientPost);
+                                    dataModel.localPort=port;
+                                    dataModel.localIP=curIP;
+                                    try
+                                    {
+                                    MessageBus.post("udp", dataModel);
+                                    }
+                                    catch(Exception ex)
+                                    {
+                                        System.out.println("接收错误："+ex.getMessage());
+                                    }
+                                  
+                                   
+                                }  
+                            }  
+                        }  
+                    } catch (Exception e)  
+                    {  
+                        e.printStackTrace();  
+                    }  
+                }  
+          
+
+            }
+            
+            @Override
+            public void run() {
+               // recviceData();
+                recviceChannel();
             }
             
         });

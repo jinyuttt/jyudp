@@ -139,6 +139,10 @@ public class ClientSession extends Session {
     @Override
     public void sendData(long id,String sIP, int sPort, byte[] data) {
         //
+        if(data==null)
+        {
+            return;
+        }
         LinkedList<byte[]> subPackaget=SubPackaget.subData(data);
         long initseq=PackagetRandom.getInstanceID(this);
         int size=subPackaget.size();
@@ -146,15 +150,19 @@ public class ClientSession extends Session {
         mapInitSeq.put(initseq, size);
         this.srcIP=sIP;
         this.port=sPort;
-        while(index>0)
+        long packageid=initseq;
+      while(true)
        {
-          long packageid=PackagetRandom.getInstanceID(this);
           byte[]sendData=CreateNetPackaget.createNetPackaget(id,this.getID(), initseq,packageid , size, subPackaget.removeFirst());
           client.sendData(sIP, sPort, sendData);
           mapCache.put(packageid, sendData);
           //每添加一次数据
           ClientManager.addSessionData(this.getID(),packageid,sendData.length);
           index--;
+          if(index>0)
+          packageid=PackagetRandom.getInstanceID(this);
+          else
+              break;
        }
         startThread();//启动监听
         //发送端确认发送acks
